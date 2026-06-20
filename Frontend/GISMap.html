@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GLOF Sentinel - Interactive Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Custom map polygon styles */
+        .glacier-polygon { fill: rgba(76, 215, 246, 0.1); stroke: #4cd7f6; stroke-width: 1.5; stroke-dasharray: 4 2; }
+        .risk-polygon { fill: rgba(255, 180, 171, 0.15); stroke: #ffb4ab; stroke-width: 1.5; }
+        
+        /* Ghost input focus glow */
+        .ghost-input:focus {
+            outline: none;
+            border-color: #4cd7f6;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
+        }
+
+        /* Custom toggle switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4cd7f6;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4cd7f6;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#111c2d",
+                        "surface-container-lowest": "#040e1f",
+                        "secondary-fixed": "#acedff",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-highest": "#2a3548",
+                        "on-surface-variant": "#c6c6cd",
+                        "surface-variant": "#2a3548",
+                        "surface-tint": "#bec6e0",
+                        "surface-dim": "#081425",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#565e74",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "inverse-on-surface": "#263143",
+                        "surface-bright": "#2f3a4c",
+                        "primary": "#bec6e0",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-surface": "#d8e3fb",
+                        "background": "#081425",
+                        "outline-variant": "#45464d",
+                        "on-secondary-container": "#00424e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-error": "#690005",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "surface": "#081425",
+                        "outline": "#909097",
+                        "on-background": "#d8e3fb",
+                        "secondary": "#4cd7f6",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary": "#003640",
+                        "surface-container": "#152031",
+                        "tertiary-fixed": "#6ffbbe",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary-fixed": "#001f26",
+                        "on-tertiary": "#003824",
+                        "on-primary-container": "#798098",
+                        "on-primary": "#283044",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-container": "#0f172a",
+                        "tertiary-container": "#001c10",
+                        "on-tertiary-container": "#009365",
+                        "secondary-container": "#03b5d3",
+                        "surface-container-high": "#1f2a3c",
+                        "tertiary": "#4edea3",
+                        "on-surface": "#d8e3fb",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "sidebar-expanded": "280px",
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "stack-gap": "12px",
+                        "sidebar-collapsed": "72px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-sm": ["Inter", "sans-serif"],
+                        "data-mono": ["JetBrains Mono", "monospace"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface h-screen w-full overflow-hidden flex flex-col font-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding h-16 bg-surface-container/60 dark:bg-surface-container/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-4">
+<!-- Brand Logo -->
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">GLOF Sentinel</span>
+<!-- Search Bar (on_left configuration) -->
+<div class="hidden md:flex items-center bg-surface-container-high border border-outline-variant/40 rounded px-3 py-1.5 ml-4">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/50 w-64 ghost-input p-0" placeholder="Search coordinates or regions..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Trailing Secondary Action -->
+<div class="hidden lg:flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#4edea3]"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">All Systems Normal</span>
+</div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-3">
+<button class="p-2 rounded hover:bg-surface-variant/50 transition-colors text-on-surface-variant hover:text-on-surface active:scale-95 duration-150 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span>
+</button>
+<button class="p-2 rounded hover:bg-surface-variant/50 transition-colors text-on-surface-variant hover:text-on-surface active:scale-95 duration-150">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 rounded hover:bg-surface-variant/50 transition-colors text-on-surface-variant hover:text-on-surface active:scale-95 duration-150">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+<!-- Profile Image -->
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant/50 ml-2 overflow-hidden cursor-pointer hover:border-secondary transition-colors">
+<span class="material-symbols-outlined w-full h-full flex items-center justify-center text-on-surface-variant bg-surface-container-high">person</span>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-16 h-full relative">
+<!-- SideNavBar (Desktop) -->
+<nav class="fixed left-0 top-0 h-full z-40 hidden lg:flex flex-col pt-16 bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-2xl border-r border-outline-variant/20 shadow-xl w-sidebar-expanded transition-all duration-300 ease-in-out">
+<div class="p-6 pb-2 border-b border-outline-variant/20">
+<h2 class="font-headline-sm text-headline-sm font-black text-on-surface">GLOF Sentinel</h2>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">Mission Control</p>
+</div>
+<div class="flex-1 overflow-y-auto py-4 flex flex-col gap-1 px-3">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors group" href="CommandDashboard.html">
+<span class="material-symbols-outlined text-[20px] group-hover:text-secondary transition-colors">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<!-- Live Monitoring -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors group" href="LiveMonitoring.html">
+<span class="material-symbols-outlined text-[20px] group-hover:text-secondary transition-colors">videocam</span>
+<span class="font-body-sm text-body-sm">Live Monitoring</span>
+</a>
+<!-- Interactive Map (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded border-l-4 border-secondary bg-secondary/10 text-secondary font-semibold transition-colors" href="GISMap.html">
+<span class="material-symbols-outlined text-[20px] shadow-[0_0_10px_rgba(76,215,246,0.3)] rounded-full" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-body-sm text-body-sm">Interactive Map</span>
+</a>
+<!-- Prediction Center -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors group" href="AIpreditionCentre.html">
+<span class="material-symbols-outlined text-[20px] group-hover:text-secondary transition-colors">query_stats</span>
+<span class="font-body-sm text-body-sm">Prediction Center</span>
+</a>
+<!-- Alerts -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors group" href="Alerts.html">
+<span class="material-symbols-outlined text-[20px] group-hover:text-error transition-colors">warning</span>
+<span class="font-body-sm text-body-sm flex-1">Alerts</span>
+<span class="bg-error/20 text-error font-data-mono text-[10px] px-1.5 py-0.5 rounded">3</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors group" href="Analysis.html">
+<span class="material-symbols-outlined text-[20px] group-hover:text-secondary transition-colors">bar_chart</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<!-- About -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors group" href="About.html">
+<span class="material-symbols-outlined text-[20px] group-hover:text-secondary transition-colors">info</span>
+<span class="font-body-sm text-body-sm">About</span>
+</a>
+</div>
+<div class="p-4 border-t border-outline-variant/20">
+<button class="w-full py-2 px-4 rounded border border-outline-variant/50 hover:bg-surface-variant/50 text-on-surface font-label-caps text-label-caps flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+                    Deployment Status
+                </button>
+</div>
+</nav>
+<!-- Main Content Area (GIS Map) -->
+<main class="flex-1 relative w-full h-full lg:ml-sidebar-expanded overflow-hidden bg-[#020813]">
+<!-- Map Background Image (Satellite/Terrain Mock) -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-80 mix-blend-luminosity" data-alt="A highly detailed, dark-themed digital satellite map view of a rugged mountainous terrain typical of the Himalayas. The topography is rendered with subtle shadows and depth in deep slate blues and blacks, emphasizing steep ridges and valleys. The aesthetic is extremely high-tech, resembling a military or scientific mission control interface, with low-opacity grid lines overlaid on the terrain. The lighting is artificial and precise, highlighting specific geographical features while maintaining a dark, serious, and vigilant mood overall." style="background: radial-gradient(circle at top right, rgba(0,66,78,0.2) 0%, transparent 40%), radial-gradient(circle at bottom left, rgba(21,32,49,0.5) 0%, rgba(4,14,31,0.8) 100%)"></div>
+<!-- Subtle Grid Overlay -->
+<div class="absolute inset-0 w-full h-full pointer-events-none" style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px;"></div>
+<!-- SVG Layer for Polygons (Risk Areas, Topography) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<!-- Glacial Region Polygon -->
+<polygon class="glacier-polygon" points="150,200 300,100 450,250 350,400 200,350"></polygon>
+<!-- Flood Risk Corridor Polygon -->
+<path class="risk-polygon" d="M400,500 C450,400 550,450 600,350 L750,400 C700,500 550,600 450,550 Z"></path>
+</svg>
+<!-- Map Markers & Icons -->
+<!-- Normal Glacial Lake Marker -->
+<div class="absolute top-[250px] left-[350px] transform -translate-x-1/2 -translate-y-1/2 z-20 group cursor-pointer">
+<div class="relative w-4 h-4">
+<div class="absolute inset-0 rounded-full bg-secondary/30 animate-ping"></div>
+<div class="absolute inset-1 rounded-full bg-secondary shadow-[0_0_8px_#4cd7f6]"></div>
+</div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 bg-surface-container/90 backdrop-blur border border-outline-variant/30 px-2 py-1 rounded hidden group-hover:block whitespace-nowrap">
+<span class="font-label-caps text-label-caps text-on-surface">Lake Alpha</span>
+</div>
+</div>
+<!-- Critical Risk Marker (Clicked state demo) -->
+<div class="absolute top-[400px] left-[600px] transform -translate-x-1/2 -translate-y-1/2 z-30">
+<div class="relative w-5 h-5 cursor-pointer">
+<div class="absolute inset-[-4px] rounded-full bg-error/40 animate-ping" style="animation-duration: 1s;"></div>
+<div class="absolute inset-0 rounded-full bg-error border border-white/20 shadow-[0_0_12px_#ffb4ab]"></div>
+<div class="absolute inset-1.5 rounded-full bg-surface-container-lowest"></div>
+</div>
+<!-- Detail Overlay (Glassmorphic Popup for Clicked Marker) -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-64 bg-surface-container/80 backdrop-blur-2xl border border-error/50 shadow-2xl rounded-lg overflow-hidden flex flex-col pointer-events-auto">
+<div class="px-4 py-2 border-b border-outline-variant/30 flex justify-between items-center bg-error/10">
+<span class="font-headline-sm text-headline-sm text-on-surface">Lake Tsho Rolpa</span>
+<span class="material-symbols-outlined text-error text-[18px]">warning</span>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-end border-b border-outline-variant/20 pb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Est. Volume</span>
+<span class="font-data-mono text-data-mono text-secondary">85.4M m³</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/20 pb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Water Level</span>
+<span class="font-data-mono text-data-mono text-error flex items-center gap-1">
+                                +2.4m <span class="material-symbols-outlined text-[14px]">trending_up</span>
+</span>
+</div>
+<div class="mt-1">
+<div class="flex justify-between text-[10px] text-on-surface-variant mb-1 uppercase tracking-wider">
+<span>Risk Assessment</span>
+<span class="text-error font-bold">CRITICAL</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+<div class="bg-error h-1.5 rounded-full" style="width: 90%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Emergency Shelter Icons -->
+<div class="absolute top-[480px] left-[500px] transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-surface-container/80 backdrop-blur border border-tertiary/50 flex items-center justify-center text-tertiary shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+</div>
+<div class="absolute top-10 left-1/2 -translate-x-1/2 bg-surface-container/90 backdrop-blur border border-outline-variant/30 px-2 py-1 rounded hidden group-hover:block whitespace-nowrap">
+<span class="font-label-caps text-label-caps text-on-surface">Camp Base 4</span>
+</div>
+</div>
+<!-- Floating Control Panel (Left Side on Main Canvas) -->
+<div class="absolute top-6 left-6 z-30 w-72 bg-surface-container/60 dark:bg-surface-container/60 backdrop-blur-2xl border border-outline-variant/30 shadow-xl rounded-xl overflow-hidden hidden md:flex flex-col">
+<div class="p-4 border-b border-outline-variant/30 bg-surface-container-high/40">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">layers</span>
+                        Map Controls
+                    </h3>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<!-- Toggle: Sensors -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:text-secondary transition-colors">
+<span class="material-symbols-outlined text-[18px]">sensors</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Sensor Network</span>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface-container-lowest border-2 border-outline-variant appearance-none cursor-pointer z-10 transition-all duration-300" id="toggle-sensors" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-container-high cursor-pointer transition-colors duration-300" for="toggle-sensors"></label>
+</div>
+</label>
+<!-- Toggle: Lakes -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:text-secondary transition-colors">
+<span class="material-symbols-outlined text-[18px]">water</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Glacial Lakes</span>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface-container-lowest border-2 border-outline-variant appearance-none cursor-pointer z-10 transition-all duration-300" id="toggle-lakes" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-container-high cursor-pointer transition-colors duration-300" for="toggle-lakes"></label>
+</div>
+</label>
+<!-- Toggle: Shelters -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined text-[18px]">home_work</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Evac Shelters</span>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface-container-lowest border-2 border-outline-variant appearance-none cursor-pointer z-10 transition-all duration-300" id="toggle-shelters" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-container-high cursor-pointer transition-colors duration-300" for="toggle-shelters"></label>
+</div>
+</label>
+<!-- Toggle: Topography -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">terrain</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Topography Overlay</span>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface-container-lowest border-2 border-outline-variant appearance-none cursor-pointer z-10 transition-all duration-300" id="toggle-topo" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-container-high cursor-pointer transition-colors duration-300" for="toggle-topo"></label>
+</div>
+</label>
+</div>
+<!-- Map Legend snippet -->
+<div class="p-4 border-t border-outline-variant/30 bg-surface-container-low/50">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-3">Legend</span>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary shadow-[0_0_4px_#4cd7f6]"></div>
+<span class="font-data-mono text-[11px] text-on-surface-variant">Stable Lake</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-error border border-white/20 shadow-[0_0_4px_#ffb4ab]"></div>
+<span class="font-data-mono text-[11px] text-on-surface-variant">Critical Risk</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 border border-[#4cd7f6] bg-[#4cd7f6]/10 border-dashed"></div>
+<span class="font-data-mono text-[11px] text-on-surface-variant">Glacial Boundary</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Floating Action (Mobile Search/Filter intent) -->
+<button class="md:hidden absolute bottom-24 right-6 w-14 h-14 rounded-full bg-surface-container-high border border-outline-variant/50 shadow-xl flex items-center justify-center text-primary z-40 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">layers</span>
+</button>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center lg:hidden px-4 pb-safe h-20 bg-surface-container-highest/90 dark:bg-surface-container-highest/90 backdrop-blur-lg border-t border-outline-variant/40 shadow-2xl rounded-t-xl tactile haptic-ready">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant rounded-xl transition-colors" href="CommandDashboard.html">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-label-caps text-[10px] mt-1">Home</span>
+</a>
+<!-- Map (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-secondary/20 text-secondary rounded-xl p-2 active:bg-surface-variant transition-colors" href="GISMap.html">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-label-caps text-[10px] mt-1">Map</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant rounded-xl transition-colors relative" href="Alerts.html">
+<span class="material-symbols-outlined text-[24px]">warning</span>
+<span class="font-label-caps text-[10px] mt-1">Alerts</span>
+<span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-error"></span>
+</a>
+<!-- Data -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant rounded-xl transition-colors" href="Analysis.html">
+<span class="material-symbols-outlined text-[24px]">bar_chart</span>
+<span class="font-label-caps text-[10px] mt-1">Data</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant rounded-xl transition-colors" href="About.html">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="font-label-caps text-[10px] mt-1">Settings</span>
+</a>
+</nav>
+<script id="dynamic-data-v2">
+
+const ws = new WebSocket('ws://localhost:8000/ws/telemetry');
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "alert") {
+        const alertBox = document.createElement('div');
+        alertBox.style = "position: fixed; top: 0; width: 100%; background: #93000a; color: white; padding: 16px; text-align: center; z-index: 9999; font-weight: bold; font-family: 'JetBrains Mono', monospace;";
+        alertBox.innerText = "GLOBAL AI ALERT: " + data.message;
+        document.body.prepend(alertBox);
+        setTimeout(() => alertBox.remove(), 8000);
+    }
+    
+    // Auto-update any element with specific classes if we are on a dashboard
+    if (data.type === "telemetry" && window.location.pathname.includes("CommandDashboard")) {
+        // Simple DOM update hack for Command Dashboard
+        const displays = document.querySelectorAll('.font-display-lg.text-secondary.leading-none');
+        if (displays.length >= 3) {
+            displays[0].innerText = data.waterLevel.toFixed(1);
+            displays[1].innerText = data.rainfall24h.toFixed(1);
+            displays[2].innerText = data.temperature.toFixed(1);
+        }
+    }
+};
+
+</script>
+</body></html>
