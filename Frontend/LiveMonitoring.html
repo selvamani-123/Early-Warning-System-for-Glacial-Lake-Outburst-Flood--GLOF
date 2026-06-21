@@ -1,730 +1,268 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
-
+<html lang="en" class="dark">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>GLOF Sentinel - Live Monitoring</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
-        rel="stylesheet">
-    <!-- Material Symbols -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Tailwind Configuration -->
-    <script id="tailwind-config">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Monitoring | GLOF Sentinel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <script>
         tailwind.config = {
-            darkMode: "class",
+            darkMode: 'class',
             theme: {
                 extend: {
-                    "colors": {
-                        "surface-container-low": "#111c2d",
-                        "surface-container-lowest": "#040e1f",
-                        "secondary-fixed": "#acedff",
-                        "on-tertiary-fixed-variant": "#005236",
-                        "on-tertiary-fixed": "#002113",
-                        "surface-container-highest": "#2a3548",
-                        "on-surface-variant": "#c6c6cd",
-                        "surface-variant": "#2a3548",
-                        "surface-tint": "#bec6e0",
-                        "surface-dim": "#081425",
-                        "error": "#ffb4ab",
-                        "error-container": "#93000a",
-                        "inverse-primary": "#565e74",
-                        "secondary-fixed-dim": "#4cd7f6",
-                        "inverse-on-surface": "#263143",
-                        "surface-bright": "#2f3a4c",
-                        "primary": "#bec6e0",
-                        "on-primary-fixed": "#131b2e",
-                        "inverse-surface": "#d8e3fb",
-                        "background": "#081425",
-                        "outline-variant": "#45464d",
-                        "on-secondary-container": "#00424e",
-                        "on-primary-fixed-variant": "#3f465c",
-                        "on-error": "#690005",
-                        "on-secondary-fixed-variant": "#004e5c",
-                        "surface": "#081425",
-                        "outline": "#909097",
-                        "on-background": "#d8e3fb",
-                        "secondary": "#4cd7f6",
-                        "primary-fixed-dim": "#bec6e0",
-                        "on-secondary": "#003640",
-                        "surface-container": "#152031",
-                        "tertiary-fixed": "#6ffbbe",
-                        "primary-fixed": "#dae2fd",
-                        "on-secondary-fixed": "#001f26",
-                        "on-tertiary": "#003824",
-                        "on-primary-container": "#798098",
-                        "on-primary": "#283044",
-                        "tertiary-fixed-dim": "#4edea3",
-                        "primary-container": "#0f172a",
-                        "tertiary-container": "#001c10",
-                        "on-tertiary-container": "#009365",
-                        "secondary-container": "#03b5d3",
-                        "surface-container-high": "#1f2a3c",
-                        "tertiary": "#4edea3",
-                        "on-surface": "#d8e3fb",
-                        "on-error-container": "#ffdad6"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "unit": "4px",
-                        "sidebar-expanded": "280px",
-                        "container-padding": "24px",
-                        "gutter": "16px",
-                        "stack-gap": "12px",
-                        "sidebar-collapsed": "72px"
-                    },
-                    "fontFamily": {
-                        "display-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-sm": ["Inter"],
-                        "data-mono": ["JetBrains Mono"],
-                        "body-sm": ["Inter"],
-                        "label-caps": ["Inter"],
-                        "headline-md": ["Inter"]
-                    },
-                    "fontSize": {
-                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
-                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
-                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
-                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'], },
+                    colors: {
+                        bgMain: '#050B14', bgPanel: '#0A1322', bgGlass: 'rgba(10, 19, 34, 0.65)', borderGlass: 'rgba(255, 255, 255, 0.08)',
+                        textPrimary: '#E2E8F0', textSecondary: '#94A3B8',
+                        riskLow: '#10B981', riskModerate: '#F59E0B', riskHigh: '#F97316', riskCritical: '#EF4444', accent: '#3B82F6'
                     }
                 }
             }
         }
     </script>
     <style>
-        body {
-            background-color: theme('colors.background');
-            color: theme('colors.on-background');
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
+        body { background-color: #050B14; color: #E2E8F0; letter-spacing: -0.01em; }
         .glass-panel {
-            background-color: rgba(21, 32, 49, 0.4);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.2);
+            background: rgba(10, 19, 34, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .glass-panel-sub {
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .glass-panel:hover {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.8);
+            transform: translateY(-2px);
         }
-
-        /* Custom Scrollbar for Timeline */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: theme('colors.surface-variant');
-            border-radius: theme('borderRadius.full');
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: theme('colors.outline');
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050B14; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .nav-item.active { border-left: 3px solid theme('colors.accent'); background: rgba(59, 130, 246, 0.1); color: #fff;}
+        .flash { animation: pulseBg 1s ease-out; }
+        @keyframes pulseBg { 0% { background-color: rgba(59, 130, 246, 0.3); } 100% { background-color: transparent; } }
     </style>
 </head>
+<body class="h-screen flex flex-col font-sans overflow-hidden">
 
-<body
-    class="antialiased min-h-screen overflow-x-hidden flex flex-col font-body-md text-body-md selection:bg-secondary/30">
-    <!-- Ambient Map Background -->
-    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-10 bg-surface-container-lowest"
-        data-alt="A highly technical, dark mode topological GIS map of a mountainous region, showing contour lines in faint cyan and deep blue. The aesthetic is purely data-driven, mission-control style, with subtle glowing nodes indicating sensor locations. No text."
-        style="background: radial-gradient(circle at top right, rgba(0,66,78,0.2) 0%, transparent 40%), radial-gradient(circle at bottom left, rgba(21,32,49,0.5) 0%, rgba(4,14,31,0.8) 100%)">
-    </div>
-    <!-- TopNavBar (Shared Component) -->
-    <nav
-        class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding h-16 bg-surface-container/60 dark:bg-surface-container/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm transition-colors text-primary dark:text-primary">
-        <div class="flex items-center gap-4">
-            <span class="material-symbols-outlined text-secondary"
-                style="font-variation-settings: &quot;FILL&quot; 1;">satellite_alt</span>
-            <span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">GLOF Sentinel</span>
+    <header class="h-14 border-b border-white/10 flex items-center justify-between px-6 bg-bgPanel z-50 shrink-0">
+        <div class="flex items-center gap-3 w-1/4">
+            <span class="material-symbols-outlined text-accent text-2xl">satellite_alt</span>
+            <span class="font-bold tracking-[0.2em] text-lg text-white">GLOF SENTINEL</span>
+            <span class="text-xs text-textSecondary ml-2 font-mono border border-white/10 px-2 py-0.5 rounded uppercase">TELEMETRY</span>
         </div>
-        <div class="flex items-center gap-6">
-            <div
-                class="hidden md:flex items-center gap-2 text-tertiary bg-tertiary/10 px-3 py-1 rounded-full border border-tertiary/20">
-                <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
-                <span class="font-label-caps text-label-caps uppercase tracking-wider">All Systems Normal</span>
-            </div>
-            <div class="flex items-center gap-4 border-l border-outline-variant/30 pl-4">
-                <button
-                    class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 transition-colors p-2 rounded-full active:scale-95 duration-150">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <button
-                    class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 transition-colors p-2 rounded-full active:scale-95 duration-150">
-                    <span class="material-symbols-outlined">sensors</span>
-                </button>
-                <button
-                    class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 transition-colors p-2 rounded-full active:scale-95 duration-150">
-                    <span class="material-symbols-outlined">settings</span>
-                </button>
-                <img alt="User profile"
-                    class="w-8 h-8 rounded-full border border-outline-variant/50 object-cover cursor-pointer"
-                    data-alt="A professional headshot of a female environmental engineer in a mission control setting, dramatic lighting, wearing a headset, dark background."
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEdH7KbT60bNluvWZC0fBOiUPIg29fiVOvm1Z8cG30NbCmqCyqn0j71mRoIrfe37LTPc-ztAAZEgPbACsQo9hHC5RoyqtALWeAGyNFOeszgPW-Sg7xovlbu0QQhZUYHav4twmBKmEGTUfS18ZREW_k4ncuosEr52pd3g1f8eKz1aB4V2rM4857rEtvVqZ9gPzbtXiQNh4Pr_gH5tBgof-8l7p20dZkFNtQ0iHAblU1gqkt6e6dSMl_m8S9qvc8fKX93hfqpXFp7buM">
-            </div>
-        </div>
-    </nav>
-    <!-- SideNavBar (Shared Component) -->
-    <aside
-        class="fixed left-0 top-0 h-full z-40 hidden lg:flex flex-col pt-16 w-sidebar-expanded bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-2xl border-r border-outline-variant/20 shadow-xl transition-all duration-300 ease-in-out text-secondary dark:text-secondary">
-        <div class="p-6 border-b border-outline-variant/20">
-            <h2 class="font-headline-sm text-headline-sm font-black text-on-surface uppercase tracking-wider">GLOF
-                Sentinel</h2>
-            <p class="font-label-caps text-label-caps text-on-surface-variant mt-1">Mission Control</p>
-        </div>
-        <div class="flex-1 overflow-y-auto py-4 flex flex-col gap-1">
-            <!-- Inactive Tab -->
-            <a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors"
-                href="CommandDashboard.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span class="font-body-sm text-body-sm font-medium">Dashboard</span>
-            </a>
-            <!-- Active Tab: Live Monitoring -->
-            <a class="flex items-center gap-4 px-6 py-3 border-l-4 border-secondary bg-secondary/10 text-secondary font-semibold transition-colors"
-                href="LiveMonitoring.html">
-                <span class="material-symbols-outlined"
-                    style="font-variation-settings: &quot;FILL&quot; 1;">videocam</span>
-                <span class="font-body-sm text-body-sm">Live Monitoring</span>
-            </a>
-            <a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors"
-                href="GISMap.html">
-                <span class="material-symbols-outlined">map</span>
-                <span class="font-body-sm text-body-sm font-medium">Interactive Map</span>
-            </a>
-            <a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors"
-                href="AIpreditionCentre.html">
-                <span class="material-symbols-outlined">query_stats</span>
-                <span class="font-body-sm text-body-sm font-medium">Prediction Center</span>
-            </a>
-            <a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors"
-                href="Alerts.html">
-                <span class="material-symbols-outlined">warning</span>
-                <span class="font-body-sm text-body-sm font-medium flex-1">Alerts</span>
-                <span class="bg-error text-on-error font-data-mono text-[10px] px-2 py-0.5 rounded-full">3</span>
-            </a>
-            <a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors"
-                href="Analysis.html">
-                <span class="material-symbols-outlined">bar_chart</span>
-                <span class="font-body-sm text-body-sm font-medium">Analytics</span>
-            </a>
-            <a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 transition-colors"
-                href="About.html">
-                <span class="material-symbols-outlined">info</span>
-                <span class="font-body-sm text-body-sm font-medium">About</span>
-            </a>
-        </div>
-        <div class="p-6">
-            <button
-                class="w-full py-3 px-4 bg-surface-variant hover:bg-surface-bright text-primary font-label-caps text-label-caps rounded-lg border border-outline-variant/30 transition-colors flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">cell_tower</span>
-                Deployment Status
-            </button>
-        </div>
-    </aside>
-    <!-- Main Content Area -->
-    <main class="flex-1 pt-16 lg:pl-sidebar-expanded pb-24 lg:pb-0 relative">
-        <div class="p-container-padding lg:p-6 h-full flex flex-col max-w-[1600px] mx-auto">
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
-                <div>
-                    <div class="flex items-center gap-3 mb-1">
-                        <span class="w-1.5 h-6 bg-secondary rounded-full"></span>
-                        <h1
-                            class="font-headline-md text-display-lg text-[32px] font-bold text-on-surface tracking-tight">
-                            Real-Time Telemetry</h1>
-                    </div>
-                    <div class="flex items-center gap-2 text-on-surface-variant font-data-mono text-sm">
-                        <span
-                            class="bg-surface-variant/50 px-2 py-0.5 rounded border border-outline-variant/30 text-secondary">Sector
-                            Alpha-9</span>
-                        <span class="text-outline-variant">•</span>
-                        <span class="">Glacier Lake Outburst Flood Monitoring Grid</span>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <button
-                        class="glass-panel px-4 py-2 rounded-lg flex items-center gap-2 font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">filter_list</span>
-                        Filter Node
-                    </button>
-                    <button
-                        class="glass-panel px-4 py-2 rounded-lg flex items-center gap-2 font-label-caps text-label-caps text-secondary border border-secondary/30 hover:bg-secondary/10 transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">refresh</span>
-                        Sync Now
-                    </button>
-                </div>
-            </div>
-            <!-- Bento Grid Layout -->
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter h-full">
-                <!-- Left: Sensor Grid (8 cols on XL) -->
-                <div class="xl:col-span-8 flex flex-col gap-gutter">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                        <!-- Card 1: Water Level Gauge -->
-                        <div
-                            class="glass-panel rounded-xl p-5 flex flex-col relative overflow-hidden group hover:border-outline-variant/50 transition-colors">
-                            <div
-                                class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none">
-                            </div>
-                            <div class="flex justify-between items-center mb-6">
-                                <div class="flex flex-col">
-                                    <h3
-                                        class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
-                                        <span
-                                            class="material-symbols-outlined text-[16px] text-secondary">water_drop</span>
-                                        Node 01: Basin Level
-                                    </h3>
-                                    <span class="font-data-mono text-[10px] text-on-surface-variant mt-1 opacity-70">ID:
-                                        N01-WL-A9</span>
-                                </div>
-                                <button
-                                    class="text-on-surface-variant hover:text-secondary transition-colors p-1 rounded-full hover:bg-surface-variant/50">
-                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
-                                </button>
-                            </div>
-                            <div class="flex-1 flex items-center justify-center py-4 relative">
-                                <!-- Technical Gauge -->
-                                <div class="relative w-40 h-40">
-                                    <svg class="w-full h-full transform -rotate-135" viewBox="0 0 100 100">
-                                        <!-- Background track -->
-                                        <circle class="text-surface-variant" cx="50" cy="50" fill="none" r="45"
-                                            stroke="currentColor" stroke-dasharray="212.05" stroke-dashoffset="0"
-                                            stroke-linecap="round" stroke-width="2"></circle>
-                                        <!-- Warning zone indicator -->
-                                        <circle class="text-error/20" cx="50" cy="50" fill="none" r="45"
-                                            stroke="currentColor" stroke-dasharray="212.05" stroke-dashoffset="180"
-                                            stroke-linecap="round" stroke-width="4"></circle>
-                                        <!-- Progress value (approx 75% of 270 degrees) -->
-                                        <circle class="text-secondary shadow-[0_0_15px_rgba(76,215,246,0.5)]" cx="50"
-                                            cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="212.05"
-                                            stroke-dashoffset="50" stroke-linecap="round" stroke-width="4"></circle>
-                                    </svg>
-                                    <!-- Tick marks -->
-                                    <div class="absolute inset-0 w-full h-full">
-                                        <div
-                                            class="absolute w-1 h-2 bg-outline-variant top-[10px] left-[50%] -translate-x-1/2">
-                                        </div>
-                                        <div
-                                            class="absolute w-2 h-1 bg-outline-variant left-[10px] top-[50%] -translate-y-1/2">
-                                        </div>
-                                        <div
-                                            class="absolute w-2 h-1 bg-outline-variant right-[10px] top-[50%] -translate-y-1/2">
-                                        </div>
-                                    </div>
-                                    <div class="absolute inset-0 flex flex-col items-center justify-center pt-2">
-                                        <span
-                                            class="font-data-mono text-[36px] font-bold text-on-surface leading-none tracking-tight">14.2</span>
-                                        <span
-                                            class="font-label-caps text-[11px] text-on-surface-variant tracking-widest mt-1">Meters</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-end mt-4 pt-4 border-t border-outline-variant/20">
-                                <div class="flex flex-col gap-1">
-                                    <div class="font-data-mono text-[11px] text-on-surface-variant">Threshold: <span
-                                            class="text-error">18.0m</span></div>
-                                    <div
-                                        class="font-data-mono text-[10px] text-on-surface-variant/70 flex items-center gap-1">
-                                        <span
-                                            class="material-symbols-outlined text-[12px] text-tertiary">battery_5_bar</span>
-                                        92% | Sync: 2s ago
-                                    </div>
-                                </div>
-                                <div
-                                    class="font-label-caps text-[10px] text-tertiary glass-panel-sub px-2 py-1 rounded border-tertiary/20 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">arrow_upward</span> +0.1m/h
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card 2: Rainfall Indicator -->
-                        <div
-                            class="glass-panel rounded-xl p-5 flex flex-col relative overflow-hidden group hover:border-outline-variant/50 transition-colors">
-                            <div class="flex justify-between items-center mb-6">
-                                <div class="flex flex-col">
-                                    <h3
-                                        class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[16px] text-primary">rainy</span>
-                                        Precipitation 24h
-                                    </h3>
-                                    <span
-                                        class="font-data-mono text-[10px] text-on-surface-variant mt-1 opacity-70">Station
-                                        B-2</span>
-                                </div>
-                                <button
-                                    class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-variant/50">
-                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
-                                </button>
-                            </div>
-                            <div class="flex items-end gap-6 mb-6">
-                                <div class="flex flex-col">
-                                    <span
-                                        class="font-data-mono text-[42px] font-bold text-on-surface leading-none tracking-tight">42.5</span>
-                                    <span
-                                        class="font-label-caps text-[11px] text-on-surface-variant tracking-widest mt-2">Millimeters</span>
-                                </div>
-                                <div class="flex-1 h-16 relative">
-                                    <!-- Technical Sparkline -->
-                                    <div class="absolute inset-0 border-b border-l border-outline-variant/30"></div>
-                                    <div
-                                        class="absolute bottom-0 w-full flex justify-between font-data-mono text-[8px] text-outline-variant translate-y-3">
-                                        <span class="">-24h</span>
-                                        <span class="">Now</span>
-                                    </div>
-                                    <div
-                                        class="absolute left-0 h-full flex flex-col justify-between font-data-mono text-[8px] text-outline-variant -translate-x-4">
-                                        <span class="">50</span>
-                                        <span class="">0</span>
-                                    </div>
-                                    <svg class="w-full h-full absolute inset-0" preserveAspectRatio="none"
-                                        viewBox="0 0 100 40">
-                                        <path class="text-primary"
-                                            d="M0,35 L10,30 L20,32 L30,25 L40,28 L50,15 L60,20 L70,10 L80,5 L90,8 L100,2"
-                                            fill="none" stroke="currentColor" stroke-width="1.5"
-                                            vector-effect="non-scaling-stroke"></path>
-                                        <path class="opacity-10"
-                                            d="M0,40 L0,35 L10,30 L20,32 L30,25 L40,28 L50,15 L60,20 L70,10 L80,5 L90,8 L100,2 L100,40 Z"
-                                            fill="url(#rainGradient)"></path>
-                                        <defs>
-                                            <linearGradient id="rainGradient" x1="0" x2="0" y1="0" y2="1">
-                                                <stop class="text-primary" offset="0%" stop-color="currentColor"></stop>
-                                                <stop offset="100%" stop-color="transparent"></stop>
-                                            </linearGradient>
-                                        </defs>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-3 gap-3 mt-auto border-t border-outline-variant/20 pt-4">
-                                <div class="glass-panel-sub rounded p-2 text-center">
-                                    <div class="font-label-caps text-[9px] text-on-surface-variant mb-1 tracking-wider">
-                                        1H RATE</div>
-                                    <div class="font-data-mono text-[13px] text-on-surface font-medium">2.1 <span
-                                            class="text-[10px] text-on-surface-variant">mm</span></div>
-                                </div>
-                                <div class="glass-panel-sub rounded p-2 text-center">
-                                    <div class="font-label-caps text-[9px] text-on-surface-variant mb-1 tracking-wider">
-                                        PEAK</div>
-                                    <div class="font-data-mono text-[13px] text-on-surface font-medium">5.4 <span
-                                            class="text-[10px] text-on-surface-variant">mm</span></div>
-                                </div>
-                                <div class="glass-panel-sub rounded p-2 text-center border-error/20 bg-error/5">
-                                    <div class="font-label-caps text-[9px] text-error/80 mb-1 tracking-wider">FORECAST
-                                    </div>
-                                    <div
-                                        class="font-data-mono text-[13px] text-error font-medium flex items-center justify-center gap-1">
-                                        <span class="material-symbols-outlined text-[14px]">arrow_upward</span> Hvy
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Lower Row: Details Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter flex-1">
-                        <!-- Card 3: Temperature Details -->
-                        <div
-                            class="glass-panel rounded-xl p-4 flex flex-col justify-between group hover:border-outline-variant/50 transition-colors">
-                            <div>
-                                <div
-                                    class="flex items-center justify-between border-b border-outline-variant/20 pb-3 mb-4">
-                                    <div class="flex items-center gap-2">
-                                        <span
-                                            class="material-symbols-outlined text-[16px] text-tertiary">device_thermostat</span>
-                                        <h3
-                                            class="font-label-caps text-[11px] text-on-surface-variant uppercase tracking-widest">
-                                            Ice Wall Temp</h3>
-                                    </div>
-                                    <span class="font-data-mono text-[9px] text-outline-variant">N03-TMP</span>
-                                </div>
-                                <div
-                                    class="font-data-mono text-[32px] font-bold text-on-surface leading-none tracking-tight">
-                                    -4.2<span class="text-[16px] text-on-surface-variant font-normal">°C</span></div>
-                            </div>
-                            <div class="mt-6">
-                                <div class="flex justify-between mb-1 font-data-mono text-[9px] text-outline-variant">
-                                    <span class="">-10°</span>
-                                    <span class="">0°</span>
-                                </div>
-                                <div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden relative">
-                                    <!-- Range marker -->
-                                    <div
-                                        class="absolute top-0 bottom-0 left-[19%] right-[80%] bg-on-surface-variant/30">
-                                    </div>
-                                    <!-- Current value -->
-                                    <div
-                                        class="absolute top-0 bottom-0 left-0 w-[58%] bg-tertiary shadow-[0_0_8px_rgba(78,222,163,0.6)]">
-                                    </div>
-                                </div>
-                                <div
-                                    class="flex justify-between mt-2 font-data-mono text-[10px] text-on-surface-variant">
-                                    <span class="">Min: -8.1°</span>
-                                    <span class="">Max: -2.0°</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card 4: Flow Rate -->
-                        <div
-                            class="glass-panel rounded-xl p-4 flex flex-col justify-between group hover:border-outline-variant/50 transition-colors">
-                            <div>
-                                <div
-                                    class="flex items-center justify-between border-b border-outline-variant/20 pb-3 mb-4">
-                                    <div class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[16px] text-secondary">waves</span>
-                                        <h3
-                                            class="font-label-caps text-[11px] text-on-surface-variant uppercase tracking-widest">
-                                            Outflow Velocity</h3>
-                                    </div>
-                                    <span class="font-data-mono text-[9px] text-outline-variant">N04-FLW</span>
-                                </div>
-                                <div
-                                    class="font-data-mono text-[32px] font-bold text-on-surface leading-none tracking-tight">
-                                    145<span class="text-[14px] text-on-surface-variant font-normal ml-1">m³/s</span>
-                                </div>
-                            </div>
-                            <div class="mt-6">
-                                <!-- Tech Bar Chart -->
-                                <div class="flex items-end gap-1.5 h-10 w-full">
-                                    <div
-                                        class="flex-1 bg-secondary/30 rounded-t-sm h-[40%] hover:bg-secondary/50 transition-colors">
-                                    </div>
-                                    <div
-                                        class="flex-1 bg-secondary/30 rounded-t-sm h-[50%] hover:bg-secondary/50 transition-colors">
-                                    </div>
-                                    <div
-                                        class="flex-1 bg-secondary/30 rounded-t-sm h-[45%] hover:bg-secondary/50 transition-colors">
-                                    </div>
-                                    <div
-                                        class="flex-1 bg-secondary/30 rounded-t-sm h-[60%] hover:bg-secondary/50 transition-colors">
-                                    </div>
-                                    <div
-                                        class="flex-1 bg-secondary rounded-t-sm h-[80%] shadow-[0_0_8px_rgba(76,215,246,0.6)]">
-                                    </div>
-                                </div>
-                                <div
-                                    class="mt-3 font-data-mono text-[10px] text-secondary flex items-center justify-between">
-                                    <span class="flex items-center gap-1"><span
-                                            class="material-symbols-outlined text-[14px]">trending_up</span> Rising
-                                        Trend</span>
-                                    <span class="text-outline-variant">Last 5h</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card 5: Seismic Activity -->
-                        <div
-                            class="glass-panel rounded-xl p-4 flex flex-col justify-between group hover:border-error/50 transition-colors border border-error/20 bg-gradient-to-b from-error/5 to-transparent relative overflow-hidden">
-                            <div
-                                class="absolute top-0 right-0 w-24 h-24 bg-error/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none">
-                            </div>
-                            <div>
-                                <div class="flex items-center justify-between border-b border-error/20 pb-3 mb-4">
-                                    <div class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[16px] text-error">demography</span>
-                                        <h3 class="font-label-caps text-[11px] text-error uppercase tracking-widest">
-                                            Micro-Tremors</h3>
-                                    </div>
-                                    <span class="font-data-mono text-[9px] text-error/50 animate-pulse">● REC</span>
-                                </div>
-                                <div
-                                    class="font-data-mono text-[32px] font-bold text-error leading-none tracking-tight">
-                                    1.2<span class="text-[14px] text-error/70 font-normal ml-1">Mw</span></div>
-                            </div>
-                            <div class="mt-6">
-                                <!-- Erratic Sparkline -->
-                                <div class="h-10 relative">
-                                    <div class="absolute inset-0 border-b border-error/20"></div>
-                                    <svg class="w-full h-full absolute inset-0" preserveAspectRatio="none"
-                                        viewBox="0 0 100 20">
-                                        <path class="text-error"
-                                            d="M0,10 L10,12 L15,2 L20,18 L25,8 L35,11 L40,10 L50,15 L55,5 L65,10 L80,9 L90,12 L100,10"
-                                            fill="none" stroke="currentColor" stroke-width="1.5"
-                                            vector-effect="non-scaling-stroke"></path>
-                                    </svg>
-                                </div>
-                                <div class="mt-3 font-data-mono text-[10px] text-error/80 flex justify-between">
-                                    <span class="">Last 15 min</span>
-                                    <span class="font-bold">4 anomalies</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Right: Status Timeline (4 cols on XL) -->
-                <div class="xl:col-span-4 flex flex-col h-full">
-                    <div
-                        class="glass-panel rounded-xl flex flex-col h-[600px] xl:h-full overflow-hidden border border-outline-variant/20">
-                        <div
-                            class="p-5 border-b border-outline-variant/20 bg-surface-container-high/30 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
-                            <h3
-                                class="font-headline-sm text-[16px] text-on-surface flex items-center gap-2 font-semibold">
-                                <span
-                                    class="material-symbols-outlined text-[18px] text-on-surface-variant">history</span>
-                                Event Timeline
-                            </h3>
-                            <div
-                                class="flex items-center gap-2 px-2.5 py-1 bg-surface-variant/80 rounded border border-outline-variant/30">
-                                <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                                <span
-                                    class="font-label-caps text-[9px] text-secondary uppercase tracking-widest font-bold">Live
-                                    Sync</span>
-                            </div>
-                        </div>
-                        <div class="p-5 overflow-y-auto flex-1 relative custom-scrollbar">
-                            <!-- Vertical Timeline Line -->
-                            <div
-                                class="absolute left-[33px] top-6 bottom-6 w-px bg-gradient-to-b from-outline-variant/50 via-outline-variant/20 to-transparent">
-                            </div>
-                            <ul class="space-y-8">
-                                <!-- Log Item 1: Alert -->
-                                <li class="relative pl-12 group">
-                                    <!-- Status Dot -->
-                                    <div
-                                        class="absolute left-[29px] top-1.5 w-2.5 h-2.5 rounded-full bg-error ring-[6px] ring-surface-container/80 z-10 shadow-[0_0_10px_rgba(255,180,171,0.5)]">
-                                    </div>
-                                    <div class="flex justify-between items-baseline mb-2">
-                                        <span
-                                            class="font-label-caps text-[11px] text-error uppercase tracking-widest font-bold">Seismic
-                                            Anomaly Detected</span>
-                                        <span class="font-data-mono text-[10px] text-on-surface-variant/70">14:02:45
-                                            Z</span>
-                                    </div>
-                                    <p class="font-body-sm text-[13px] text-on-surface-variant leading-relaxed">Minor
-                                        tremor registered near Moraine Wall C. Magnitude 1.2. Monitoring integrity.</p>
-                                </li>
-                                <!-- Log Item 2: Info -->
-                                <li class="relative pl-12 group">
-                                    <div
-                                        class="absolute left-[29px] top-1.5 w-2.5 h-2.5 rounded-full bg-tertiary ring-[6px] ring-surface-container/80 z-10">
-                                    </div>
-                                    <div class="flex justify-between items-baseline mb-2">
-                                        <span
-                                            class="font-label-caps text-[11px] text-tertiary uppercase tracking-widest font-bold">System
-                                            Sync Complete</span>
-                                        <span class="font-data-mono text-[10px] text-on-surface-variant/70">13:45:00
-                                            Z</span>
-                                    </div>
-                                    <p class="font-body-sm text-[13px] text-on-surface-variant leading-relaxed">All
-                                        remote telemetry nodes reported within acceptable latency parameters.</p>
-                                </li>
-                                <!-- Log Item 3: Warning -->
-                                <li class="relative pl-12 group">
-                                    <div
-                                        class="absolute left-[29px] top-1.5 w-2.5 h-2.5 rounded-full bg-secondary ring-[6px] ring-surface-container/80 z-10">
-                                    </div>
-                                    <div class="flex justify-between items-baseline mb-2">
-                                        <span
-                                            class="font-label-caps text-[11px] text-secondary uppercase tracking-widest font-bold">Precipitation
-                                            Rate Increased</span>
-                                        <span class="font-data-mono text-[10px] text-on-surface-variant/70">12:30:12
-                                            Z</span>
-                                    </div>
-                                    <p class="font-body-sm text-[13px] text-on-surface-variant leading-relaxed">Station
-                                        B-2 reporting rainfall exceeding 5mm/hr. Adjusting flood prediction models.</p>
-                                </li>
-                                <!-- Log Item 4: Normal -->
-                                <li class="relative pl-12 group opacity-70 hover:opacity-100 transition-opacity">
-                                    <div
-                                        class="absolute left-[30px] top-1.5 w-2 h-2 rounded-full bg-outline-variant ring-[6px] ring-surface-container/80 z-10">
-                                    </div>
-                                    <div class="flex justify-between items-baseline mb-2">
-                                        <span
-                                            class="font-label-caps text-[11px] text-on-surface uppercase tracking-widest font-bold">Routine
-                                            Diagnostic</span>
-                                        <span class="font-data-mono text-[10px] text-on-surface-variant/70">11:00:00
-                                            Z</span>
-                                    </div>
-                                    <p class="font-body-sm text-[13px] text-on-surface-variant leading-relaxed">
-                                        Automated sensor calibration executed. No deviations found.</p>
-                                </li>
-                                <!-- Log Item 5: Normal -->
-                                <li class="relative pl-12 group opacity-70 hover:opacity-100 transition-opacity">
-                                    <div
-                                        class="absolute left-[30px] top-1.5 w-2 h-2 rounded-full bg-outline-variant ring-[6px] ring-surface-container/80 z-10">
-                                    </div>
-                                    <div class="flex justify-between items-baseline mb-2">
-                                        <span
-                                            class="font-label-caps text-[11px] text-on-surface uppercase tracking-widest font-bold">Shift
-                                            Handover</span>
-                                        <span class="font-data-mono text-[10px] text-on-surface-variant/70">08:00:00
-                                            Z</span>
-                                    </div>
-                                    <p class="font-body-sm text-[13px] text-on-surface-variant leading-relaxed">
-                                        Commander Reynolds logged in. Sector Alpha-9 monitoring assumed.</p>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- Gradient fade at bottom -->
-                        <div
-                            class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-surface-container/80 to-transparent pointer-events-none">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-    <!-- BottomNavBar (Shared Component for Mobile) -->
-    <nav
-        class="fixed bottom-0 w-full z-50 flex justify-around items-center lg:hidden px-4 pb-safe h-20 bg-surface-container-highest/90 dark:bg-surface-container-highest/90 backdrop-blur-lg border-t border-outline-variant/40 shadow-2xl rounded-t-xl text-secondary dark:text-secondary">
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90 transition-all"
-            href="CommandDashboard.html">
-            <span class="material-symbols-outlined">home</span>
-            <span class="font-label-caps text-label-caps-mobile mt-1">Home</span>
-        </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90 transition-all"
-            href="GISMap.html">
-            <span class="material-symbols-outlined">map</span>
-            <span class="font-label-caps text-label-caps-mobile mt-1">Map</span>
-        </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90 transition-all"
-            href="Alerts.html">
+        
+        <!-- Global Search -->
+        <div class="flex-1 max-w-2xl relative px-4">
             <div class="relative">
-                <span class="material-symbols-outlined">warning</span>
-                <span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+                <span class="material-symbols-outlined absolute left-3 top-1.5 text-textSecondary text-[20px]">search</span>
+                <input type="text" id="global-search" placeholder="Search Lakes, Rivers, Regions..." class="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-accent focus:bg-white/10 transition-colors" autocomplete="off">
             </div>
-            <span class="font-label-caps text-label-caps-mobile mt-1">Alerts</span>
-        </a>
-        <!-- Active Tab for Mobile -->
-        <a class="flex flex-col items-center justify-center bg-secondary/20 text-secondary rounded-xl p-2 active:bg-surface-variant Tactile haptic-ready scale-90 transition-all"
-            href="Analysis.html">
-            <span class="material-symbols-outlined"
-                style="font-variation-settings: &quot;FILL&quot; 1;">bar_chart</span>
-            <span class="font-label-caps text-label-caps-mobile mt-1">Data</span>
-        </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90 transition-all"
-            href="About.html">
-            <span class="material-symbols-outlined">settings</span>
-            <span class="font-label-caps text-label-caps-mobile mt-1">Settings</span>
-        </a>
-    </nav>
+            <div id="search-results" class="absolute top-full left-4 right-4 mt-1 bg-bgPanel border border-white/10 rounded-lg shadow-xl hidden z-50 max-h-64 overflow-y-auto"></div>
+        </div>
 
+        <div class="flex items-center justify-end gap-4 w-1/4">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                <span class="text-xs font-mono text-accent uppercase">Live Sync: Active</span>
+            </div>
+        </div>
+    </header>
 
+    <div class="flex flex-1 overflow-hidden">
+        <nav class="w-64 flex-none border-r border-white/10 bg-bgPanel z-40 flex flex-col py-4 overflow-hidden shrink-0">
+            <div class="flex flex-col gap-2 w-64">
+                <a href="index.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">public</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Global Overview</span>
+                </a>
+                <a href="registry.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">table_view</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Global Registry</span>
+                </a>
+                <a href="lake_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">analytics</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Lake Intelligence</span>
+                </a>
+                <a href="river_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">waves</span>
+                    <span class="text-sm font-medium whitespace-nowrap">River Intelligence</span>
+                </a>
+                <a href="LiveMonitoring.html" class="nav-item active bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">speed</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Live Monitoring</span>
+                </a>
+                <a href="Alerts.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">warning</span>
+                    <span class="text-sm font-medium whitespace-nowrap flex-1">Alert Center</span>
+                </a>
+                <a href="Analysis.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">insights</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Analytics</span>
+                </a>
+            </div>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto p-6 bg-bgMain">
+            <div class="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-white tracking-tight">Real-Time Telemetry</h1>
+                    <p class="text-sm text-textSecondary mt-1">Live environmental metrics fetched from active sensor nodes</p>
+                </div>
+                <div class="flex gap-2">
+                    <select class="bg-bgPanel border border-white/10 text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-accent">
+                        <option>South Lhonak Region</option>
+                        <option>Imja Tsho Region</option>
+                        <option>Lake Palcacocha</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Temperature -->
+                <div class="glass-panel p-5 rounded-xl border-t-4 border-t-riskModerate relative overflow-hidden group transition-colors" id="card-temp">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-riskModerate/10 rounded-full blur-xl -mr-8 -mt-8"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <span class="text-xs uppercase tracking-widest text-textSecondary flex items-center gap-2"><span class="material-symbols-outlined text-sm text-riskModerate">thermostat</span> Temperature</span>
+                        <span class="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded">LIVE</span>
+                    </div>
+                    <div class="text-4xl font-bold text-white font-mono relative z-10"><span id="val-temp">2.4</span><span class="text-xl text-textSecondary">°C</span></div>
+                    <div class="mt-4 flex justify-between text-xs text-textSecondary relative z-10">
+                        <span>Min: -4.1°C</span>
+                        <span class="text-riskModerate flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> +<span id="trend-temp">1.2</span>°C/hr</span>
+                    </div>
+                </div>
+
+                <!-- Rainfall -->
+                <div class="glass-panel p-5 rounded-xl border-t-4 border-t-riskCritical relative overflow-hidden transition-colors" id="card-rain">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-riskCritical/10 rounded-full blur-xl -mr-8 -mt-8"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <span class="text-xs uppercase tracking-widest text-textSecondary flex items-center gap-2"><span class="material-symbols-outlined text-sm text-riskCritical">rainy</span> Precipitation</span>
+                        <span class="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded">LIVE</span>
+                    </div>
+                    <div class="text-4xl font-bold text-white font-mono relative z-10"><span id="val-rain">45</span><span class="text-xl text-textSecondary">mm</span></div>
+                    <div class="mt-4 flex justify-between text-xs text-textSecondary relative z-10">
+                        <span>Past 24h</span>
+                        <span class="text-riskCritical flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span> High Intensity</span>
+                    </div>
+                </div>
+
+                <!-- Humidity -->
+                <div class="glass-panel p-5 rounded-xl border-t-4 border-t-accent relative overflow-hidden transition-colors" id="card-humidity">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-accent/10 rounded-full blur-xl -mr-8 -mt-8"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <span class="text-xs uppercase tracking-widest text-textSecondary flex items-center gap-2"><span class="material-symbols-outlined text-sm text-accent">water_drop</span> Humidity</span>
+                        <span class="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded">LIVE</span>
+                    </div>
+                    <div class="text-4xl font-bold text-white font-mono relative z-10"><span id="val-humidity">84</span><span class="text-xl text-textSecondary">%</span></div>
+                    <div class="mt-4 flex justify-between text-xs text-textSecondary relative z-10">
+                        <span>Dew Point: 0.1°C</span>
+                        <span class="text-accent flex items-center gap-1">Stable</span>
+                    </div>
+                </div>
+
+                <!-- Wind -->
+                <div class="glass-panel p-5 rounded-xl border-t-4 border-t-textSecondary relative overflow-hidden transition-colors" id="card-wind">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-textSecondary/10 rounded-full blur-xl -mr-8 -mt-8"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <span class="text-xs uppercase tracking-widest text-textSecondary flex items-center gap-2"><span class="material-symbols-outlined text-sm text-white">air</span> Wind Speed</span>
+                        <span class="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded">LIVE</span>
+                    </div>
+                    <div class="text-4xl font-bold text-white font-mono relative z-10"><span id="val-wind">14</span><span class="text-xl text-textSecondary">km/h</span></div>
+                    <div class="mt-4 flex justify-between text-xs text-textSecondary relative z-10">
+                        <span>Gusts: <span id="val-gust">22</span>km/h</span>
+                        <span class="text-white flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">south_west</span> SW</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Logs -->
+            <div class="mt-8 glass-panel rounded-xl p-6">
+                <h3 class="text-sm font-bold uppercase tracking-wider border-b border-white/10 pb-3 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">terminal</span>
+                    Telemetry Stream
+                </h3>
+                <div class="font-mono text-xs space-y-2 h-48 overflow-y-auto" id="log-container">
+                    <!-- Logs injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/search.js"></script>
+    <script>
+        const logContainer = document.getElementById('log-container');
+        const logs = [
+            { level: 'INFO', msg: 'System initialized. Listening for sensor data...', color: 'text-accent' },
+            { level: 'OK', msg: 'Connection established to remote nodes.', color: 'text-riskLow' }
+        ];
+
+        function renderLogs() {
+            logContainer.innerHTML = '';
+            logs.forEach(log => {
+                const time = new Date().toLocaleTimeString('en-US', {hour12: false});
+                const div = document.createElement('div');
+                div.className = 'flex gap-4';
+                div.innerHTML = `<span class="text-textSecondary">${time}</span><span class="${log.color}">[${log.level}]</span><span class="${log.level==='WARN'||log.level==='ALERT'?'text-riskCritical':'text-white'}">${log.msg}</span>`;
+                logContainer.prepend(div);
+            });
+        }
+
+        function addLog(level, msg, color) {
+            logs.unshift({level, msg, color});
+            if(logs.length > 50) logs.pop();
+            renderLogs();
+        }
+
+        renderLogs();
+
+        // Simulate Live Data WebSocket
+        let currentTemp = 2.4;
+        let currentRain = 45.0;
+        let currentHumid = 84;
+        let currentWind = 14;
+
+        setInterval(() => {
+            // Fluctuate data
+            currentTemp += (Math.random() - 0.5) * 0.2;
+            currentRain += Math.random() > 0.8 ? (Math.random() * 2) : 0;
+            currentHumid += (Math.random() - 0.5) * 2;
+            currentWind += (Math.random() - 0.5) * 3;
+
+            // Constrain
+            currentHumid = Math.max(0, Math.min(100, currentHumid));
+            currentWind = Math.max(0, currentWind);
+
+            document.getElementById('val-temp').innerText = currentTemp.toFixed(1);
+            document.getElementById('val-rain').innerText = currentRain.toFixed(1);
+            document.getElementById('val-humidity').innerText = Math.round(currentHumid);
+            document.getElementById('val-wind').innerText = Math.round(currentWind);
+            document.getElementById('val-gust').innerText = Math.round(currentWind * 1.5);
+
+            // Flash animation randomly
+            const cards = ['card-temp', 'card-rain', 'card-humidity', 'card-wind'];
+            const randomCard = document.getElementById(cards[Math.floor(Math.random() * cards.length)]);
+            randomCard.classList.remove('flash');
+            void randomCard.offsetWidth; // trigger reflow
+            randomCard.classList.add('flash');
+
+            // Add log randomly
+            if(Math.random() > 0.7) {
+                const msgs = [
+                    "Received heartbeat from Node 4A.",
+                    "Validating temperature sensor array...",
+                    "Checking moraine pressure thresholds.",
+                    "Updating ML feature tensors..."
+                ];
+                addLog('INFO', msgs[Math.floor(Math.random() * msgs.length)], 'text-accent');
+            }
+            if(Math.random() > 0.95) {
+                addLog('WARN', 'Transient spike detected in precipitation rate.', 'text-riskModerate');
+            }
+
+        }, 2000);
+    </script>
 </body>
-
 </html>

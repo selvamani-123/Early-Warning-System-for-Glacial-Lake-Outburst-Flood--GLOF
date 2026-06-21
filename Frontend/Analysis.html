@@ -1,508 +1,247 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>GLOF Sentinel - Analytics Dashboard</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | GLOF Sentinel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
         tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "surface-container-low": "#111c2d",
-                      "surface-container-lowest": "#040e1f",
-                      "secondary-fixed": "#acedff",
-                      "on-tertiary-fixed-variant": "#005236",
-                      "on-tertiary-fixed": "#002113",
-                      "surface-container-highest": "#2a3548",
-                      "on-surface-variant": "#c6c6cd",
-                      "surface-variant": "#2a3548",
-                      "surface-tint": "#bec6e0",
-                      "surface-dim": "#081425",
-                      "error": "#ffb4ab",
-                      "error-container": "#93000a",
-                      "inverse-primary": "#565e74",
-                      "secondary-fixed-dim": "#4cd7f6",
-                      "inverse-on-surface": "#263143",
-                      "surface-bright": "#2f3a4c",
-                      "primary": "#bec6e0",
-                      "on-primary-fixed": "#131b2e",
-                      "inverse-surface": "#d8e3fb",
-                      "background": "#081425",
-                      "outline-variant": "#45464d",
-                      "on-secondary-container": "#00424e",
-                      "on-primary-fixed-variant": "#3f465c",
-                      "on-error": "#690005",
-                      "on-secondary-fixed-variant": "#004e5c",
-                      "surface": "#081425",
-                      "outline": "#909097",
-                      "on-background": "#d8e3fb",
-                      "secondary": "#4cd7f6",
-                      "primary-fixed-dim": "#bec6e0",
-                      "on-secondary": "#003640",
-                      "surface-container": "#152031",
-                      "tertiary-fixed": "#6ffbbe",
-                      "primary-fixed": "#dae2fd",
-                      "on-secondary-fixed": "#001f26",
-                      "on-tertiary": "#003824",
-                      "on-primary-container": "#798098",
-                      "on-primary": "#283044",
-                      "tertiary-fixed-dim": "#4edea3",
-                      "primary-container": "#0f172a",
-                      "tertiary-container": "#001c10",
-                      "on-tertiary-container": "#009365",
-                      "secondary-container": "#03b5d3",
-                      "surface-container-high": "#1f2a3c",
-                      "tertiary": "#4edea3",
-                      "on-surface": "#d8e3fb",
-                      "on-error-container": "#ffdad6"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.125rem",
-                      "lg": "0.25rem",
-                      "xl": "0.5rem",
-                      "full": "0.75rem"
-              },
-              "spacing": {
-                      "unit": "4px",
-                      "sidebar-expanded": "280px",
-                      "container-padding": "24px",
-                      "gutter": "16px",
-                      "stack-gap": "12px",
-                      "sidebar-collapsed": "72px"
-              },
-              "fontFamily": {
-                      "display-lg": ["Inter"],
-                      "body-md": ["Inter"],
-                      "headline-sm": ["Inter"],
-                      "data-mono": ["JetBrains Mono"],
-                      "body-sm": ["Inter"],
-                      "label-caps": ["Inter"],
-                      "headline-md": ["Inter"]
-              },
-              "fontSize": {
-                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                      "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
-                      "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
-                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
-              }
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'], },
+                    colors: {
+                        bgMain: '#050B14', bgPanel: '#0A1322', bgGlass: 'rgba(10, 19, 34, 0.65)', borderGlass: 'rgba(255, 255, 255, 0.08)',
+                        textPrimary: '#E2E8F0', textSecondary: '#94A3B8',
+                        riskLow: '#10B981', riskModerate: '#F59E0B', riskHigh: '#F97316', riskCritical: '#EF4444', accent: '#3B82F6'
+                    }
+                }
             }
-          }
         }
     </script>
-<style>
-        /* Ambient map background texture */
-        .gis-background {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: 0.15;
-            background-image: radial-gradient(circle at 50% 50%, var(--tw-colors-primary-container) 0%, transparent 80%);
-            pointer-events: none;
-        }
-
-        /* Chart Animations */
-        .path-draw {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: drawLine 2s ease-out forwards;
-        }
-
-        @keyframes drawLine {
-            to { stroke-dashoffset: 0; }
-        }
-
-        /* Glassmorphic Panel Base */
+    <style>
+        body { background-color: #050B14; color: #E2E8F0; letter-spacing: -0.01em; }
         .glass-panel {
-            background: rgba(21, 32, 49, 0.6); /* surface-container with opacity */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(198, 198, 205, 0.1); /* on-surface-variant */
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            background: rgba(10, 19, 34, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* Glow effect on hover */
         .glass-panel:hover {
-            border-color: rgba(76, 215, 246, 0.2); /* secondary */
-            box-shadow: 0 8px 32px 0 rgba(76, 215, 246, 0.05);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.8);
+            transform: translateY(-2px);
         }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050B14; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .nav-item.active { border-left: 3px solid theme('colors.accent'); background: rgba(59, 130, 246, 0.1); color: #fff;}
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen overflow-x-hidden font-body-md antialiased selection:bg-secondary/30">
-<!-- Global Map Texture Underlay -->
-<div class="gis-background"></div>
-<!-- === SHARED COMPONENT: TopNavBar === -->
-<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding h-16 bg-surface-container/60 dark:bg-surface-container/60 backdrop-blur-xl shadow-sm">
-<div class="flex items-center gap-4 w-1/3">
-<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">GLOF Sentinel</span>
-</div>
-<div class="flex items-center justify-center w-1/3">
-<div class="relative w-full max-w-md hidden md:block">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-<input class="w-full bg-surface-container-high border border-outline-variant/30 rounded-full py-1.5 pl-10 pr-4 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50 transition-all placeholder:text-on-surface-variant/50" placeholder="Search parameters..." type="text"/>
-</div>
-</div>
-<div class="flex items-center justify-end gap-6 w-1/3 text-primary dark:text-primary">
-<div class="hidden lg:flex items-center gap-2 border border-secondary/20 bg-secondary/5 px-3 py-1 rounded-full">
-<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="font-label-caps text-label-caps text-secondary">All Systems Normal</span>
-</div>
-<div class="flex gap-4">
-<button class="hover:bg-surface-variant/50 transition-colors rounded-full p-2 active:scale-95 duration-150 relative">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full animate-pulse"></span>
-</button>
-<button class="hover:bg-surface-variant/50 transition-colors rounded-full p-2 active:scale-95 duration-150 hidden sm:block">
-<span class="material-symbols-outlined">sensors</span>
-</button>
-<button class="hover:bg-surface-variant/50 transition-colors rounded-full p-2 active:scale-95 duration-150">
-<span class="material-symbols-outlined">settings</span>
-</button>
-</div>
-<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden">
-<img alt="User profile" class="w-full h-full object-cover" data-alt="A macro photography shot of a high-tech camera lens iris in a dark studio setting. The iris blades reflect subtle cyan and emerald neon lights, giving a cyber-physical intelligence vibe. Deep blacks, crisp metallic textures, 8k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYJmikvYzvJmcAfBz-m6d3V-6SmpuH9K-_lADJiKxRT5YoXJvxk78AuUxsRsyATa-z6geELhZ8MKQZtnTdZxVo3XhfYXZq1mjvcLXUhN0dVFg_omesCxoMn-OdfQLBxLkAGupTUTVImffdDcq1VKeUBaWBFYlef00utqF-OvptqF0414xGswDNgTRJuu5g1qmOxN590LLjxdPDyodVeiuwr38YYU4Q9hLEHhOf4pUfp0teyxNqF8i6bpQi34TrA6i5x0_1HC7ozbA9"/>
-</div>
-</div>
-</nav>
-<!-- === SHARED COMPONENT: SideNavBar (Desktop) === -->
-<aside class="fixed left-0 top-0 h-full z-40 hidden lg:flex flex-col pt-16 bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-2xl w-sidebar-expanded shadow-xl border-r border-outline-variant/20 Transition-all duration-300 ease-in-out">
-<div class="p-6 pb-2">
-<h2 class="font-headline-sm text-headline-sm font-black text-on-surface">GLOF Sentinel</h2>
-<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mt-1">Mission Control</p>
-</div>
-<nav class="flex-1 mt-6 px-3 space-y-1">
-<!-- Inactive -->
-<!-- Inactive -->
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 group" href="CommandDashboard.html">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
-<span class="font-body-sm text-body-sm font-semibold">Dashboard</span>
-</a>
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 group" href="LiveMonitoring.html">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">videocam</span>
-<span class="font-body-sm text-body-sm font-semibold">Live Monitoring</span>
-</a>
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 group" href="GISMap.html">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">map</span>
-<span class="font-body-sm text-body-sm font-semibold">Interactive Map</span>
-</a>
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 group" href="AIpreditionCentre.html">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">query_stats</span>
-<span class="font-body-sm text-body-sm font-semibold">Prediction Center</span>
-</a>
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 group" href="Alerts.html">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">warning</span>
-<span class="font-body-sm text-body-sm font-semibold flex-1">Alerts</span>
-<span class="bg-error/20 text-error font-data-mono text-data-mono text-[10px] px-2 py-0.5 rounded-full">3</span>
-</a>
-<!-- Active Tab: Analytics -->
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg border-l-4 border-secondary bg-secondary/10 text-secondary font-semibold" href="Analysis.html">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
-<span class="font-body-sm text-body-sm">Analytics</span>
-</a>
-<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 group mt-auto" href="About.html">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">info</span>
-<span class="font-body-sm text-body-sm font-semibold">About</span>
-</a>
-</nav>
-<div class="p-4 mt-auto mb-4 mx-3 rounded-xl border border-secondary/20 bg-gradient-to-br from-surface-container-high to-surface text-center">
-<span class="material-symbols-outlined text-secondary mb-2 block">satellite_alt</span>
-<p class="font-label-caps text-label-caps text-on-surface-variant mb-3">Deployment Status</p>
-<div class="w-full bg-surface-lowest rounded-full h-1.5 mb-2 overflow-hidden">
-<div class="bg-secondary h-1.5 rounded-full w-[85%]"></div>
-</div>
-<p class="font-data-mono text-data-mono text-xs text-secondary">85% Operational</p>
-</div>
-</aside>
-<!-- === MAIN CANVAS === -->
-<main class="pt-20 lg:pt-24 lg:pl-sidebar-expanded p-container-padding flex-1 min-h-screen pb-28 lg:pb-8">
-<!-- Header -->
-<header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div>
-<h1 class="font-display-lg text-display-lg text-on-surface">Data Analytics</h1>
-<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">Multivariate analysis of sensor grids, historical patterns, and predictive AI model performance.</p>
-</div>
-<div class="flex gap-3">
-<button class="glass-panel px-4 py-2 rounded-lg font-label-caps text-label-caps text-on-surface flex items-center gap-2 hover:bg-surface-variant transition-colors">
-<span class="material-symbols-outlined text-[18px]">calendar_month</span>
-                    Last 30 Days
-                </button>
-<button class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-caps text-label-caps flex items-center gap-2 hover:bg-secondary-container transition-colors shadow-[0_0_15px_rgba(76,215,246,0.3)]">
-<span class="material-symbols-outlined text-[18px]">download</span>
-                    Export Report
-                </button>
-</div>
-</header>
-<!-- Bento Grid Layout -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-gutter">
-<!-- Card: Water Level Trends (Spans 8 columns) -->
-<div class="glass-panel rounded-xl p-6 lg:col-span-8 flex flex-col">
-<div class="border-b border-outline-variant/30 pb-3 mb-6 flex justify-between items-center">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-secondary">water</span>
-<h3 class="font-label-caps text-label-caps text-on-surface-variant tracking-wider">Water Level Trends (30 Days)</h3>
-</div>
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-secondary"></span>
-<span class="font-data-mono text-data-mono text-xs text-on-surface">Lake Imja</span>
-<span class="w-2 h-2 rounded-full bg-tertiary ml-2"></span>
-<span class="font-data-mono text-data-mono text-xs text-on-surface">Tsho Rolpa</span>
-</div>
-</div>
-<div class="flex-1 relative min-h-[250px] w-full">
-<!-- SVG Line Chart Mockup -->
-<svg class="w-full h-full preserve-aspect-ratio-none" viewbox="0 0 800 200">
-<defs>
-<lineargradient id="cyan-fade" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="var(--tw-colors-secondary)" stop-opacity="0.3"></stop>
-<stop offset="100%" stop-color="var(--tw-colors-secondary)" stop-opacity="0"></stop>
-</lineargradient>
-<lineargradient id="emerald-fade" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="var(--tw-colors-tertiary)" stop-opacity="0.2"></stop>
-<stop offset="100%" stop-color="var(--tw-colors-tertiary)" stop-opacity="0"></stop>
-</lineargradient>
-</defs>
-<!-- Grid lines -->
-<path d="M 0 50 L 800 50 M 0 100 L 800 100 M 0 150 L 800 150" fill="none" stroke="var(--tw-colors-outline-variant)" stroke-dasharray="4 4" stroke-opacity="0.2"></path>
-<!-- Lake Imja (Cyan) -->
-<path d="M 0 180 Q 50 170 100 150 T 200 160 T 300 110 T 400 130 T 500 80 T 600 90 T 700 40 T 800 20 L 800 200 L 0 200 Z" fill="url(#cyan-fade)"></path>
-<path class="path-draw" d="M 0 180 Q 50 170 100 150 T 200 160 T 300 110 T 400 130 T 500 80 T 600 90 T 700 40 T 800 20" fill="none" stroke="var(--tw-colors-secondary)" stroke-width="2"></path>
-<!-- Tsho Rolpa (Emerald) -->
-<path class="path-draw" d="M 0 160 Q 80 165 150 140 T 250 145 T 350 120 T 450 125 T 550 100 T 650 110 T 750 70 L 800 65" fill="none" stroke="var(--tw-colors-tertiary)" stroke-width="2" style="animation-delay: 0.5s;"></path>
-</svg>
-<!-- Axis Labels -->
-<div class="absolute bottom-0 w-full flex justify-between text-[10px] font-data-mono text-outline mt-2">
-<span>Oct 01</span>
-<span>Oct 10</span>
-<span>Oct 20</span>
-<span>Oct 30</span>
-</div>
-</div>
-</div>
-<!-- Card: Prediction Performance (Spans 4 columns) -->
-<div class="glass-panel rounded-xl p-6 lg:col-span-4 flex flex-col justify-between relative overflow-hidden">
-<!-- Background decor -->
-<div class="absolute -right-10 -top-10 w-32 h-32 bg-secondary/10 rounded-full blur-3xl"></div>
-<div class="border-b border-outline-variant/30 pb-3 mb-6 relative z-10">
-<h3 class="font-label-caps text-label-caps text-on-surface-variant tracking-wider flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary">psychology</span>
-                        AI Prediction Accuracy
-                    </h3>
-</div>
-<div class="flex-1 flex flex-col items-center justify-center relative z-10">
-<!-- Technical Gauge -->
-<div class="relative w-40 h-40">
-<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
-<!-- Track -->
-<circle cx="50" cy="50" fill="none" r="45" stroke="var(--tw-colors-surface-bright)" stroke-width="8"></circle>
-<!-- Progress -->
-<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke="var(--tw-colors-tertiary)" stroke-dasharray="282.7" stroke-dashoffset="16.9" stroke-linecap="round" stroke-width="8"></circle>
-</svg>
-<div class="absolute inset-0 flex flex-col items-center justify-center">
-<span class="font-data-mono text-display-lg text-on-surface font-bold leading-none">94<span class="text-headline-sm text-on-surface-variant">%</span></span>
-<span class="font-label-caps text-[10px] text-tertiary mt-1 tracking-widest uppercase">+1.2% this week</span>
-</div>
-</div>
-</div>
-<div class="mt-4 grid grid-cols-2 gap-4 border-t border-outline-variant/20 pt-4 relative z-10">
-<div>
-<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">False Positives</p>
-<p class="font-data-mono text-body-md text-on-surface">0.02%</p>
-</div>
-<div>
-<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">Latency</p>
-<p class="font-data-mono text-body-md text-on-surface">124<span class="text-[10px] text-outline">ms</span></p>
-</div>
-</div>
-</div>
-<!-- Card: Cumulative Rainfall (Spans 6 columns) -->
-<div class="glass-panel rounded-xl p-6 lg:col-span-6 flex flex-col">
-<div class="border-b border-outline-variant/30 pb-3 mb-6 flex justify-between items-center">
-<h3 class="font-label-caps text-label-caps text-on-surface-variant tracking-wider flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">rainy</span>
-                        Cumulative Rainfall
-                    </h3>
-<span class="font-data-mono text-data-mono text-primary bg-primary/10 px-2 py-1 rounded">24h Total: 45mm</span>
-</div>
-<div class="flex-1 w-full h-48 flex items-end justify-between gap-1 mt-auto">
-<!-- CSS Bar Chart -->
-<div class="w-full bg-tertiary/20 hover:bg-tertiary/40 transition-colors rounded-t-sm relative group" style="height: 20%;">
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-surface px-2 py-1 rounded text-[10px] font-data-mono text-tertiary transition-opacity pointer-events-none">12mm</div>
-</div>
-<div class="w-full bg-tertiary/30 hover:bg-tertiary/50 transition-colors rounded-t-sm relative group" style="height: 35%;">
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-surface px-2 py-1 rounded text-[10px] font-data-mono text-tertiary transition-opacity pointer-events-none">24mm</div>
-</div>
-<div class="w-full bg-tertiary/40 hover:bg-tertiary/60 transition-colors rounded-t-sm relative group" style="height: 15%;"></div>
-<div class="w-full bg-tertiary/50 hover:bg-tertiary/70 transition-colors rounded-t-sm relative group" style="height: 60%;"></div>
-<div class="w-full bg-tertiary hover:bg-tertiary-fixed transition-colors rounded-t-sm relative group shadow-[0_0_10px_rgba(78,222,163,0.4)]" style="height: 85%;">
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-100 bg-surface px-2 py-1 rounded border border-tertiary/30 text-[10px] font-data-mono text-tertiary transition-opacity pointer-events-none z-10">45mm</div>
-</div>
-<div class="w-full bg-tertiary/40 hover:bg-tertiary/60 transition-colors rounded-t-sm relative group" style="height: 40%;"></div>
-<div class="w-full bg-tertiary/20 hover:bg-tertiary/40 transition-colors rounded-t-sm relative group" style="height: 25%;"></div>
-</div>
-<div class="w-full flex justify-between text-[10px] font-data-mono text-outline mt-2 border-t border-outline-variant/20 pt-2">
-<span>00:00</span>
-<span>06:00</span>
-<span>12:00</span>
-<span>18:00</span>
-<span>Now</span>
-</div>
-</div>
-<!-- Card: Historical Flood Events List (Spans 6 columns) -->
-<div class="glass-panel rounded-xl p-0 lg:col-span-6 flex flex-col overflow-hidden">
-<div class="border-b border-outline-variant/30 p-6 pb-3 mb-2 flex justify-between items-center bg-surface-container-high/50">
-<h3 class="font-label-caps text-label-caps text-on-surface-variant tracking-wider flex items-center gap-2">
-<span class="material-symbols-outlined text-error">history</span>
-                        Historical Events Correlated
-                    </h3>
-<button class="text-on-surface-variant hover:text-secondary text-xs">View All</button>
-</div>
-<div class="flex-1 overflow-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="border-b border-outline-variant/20 bg-surface/30">
-<th class="font-label-caps text-[10px] text-outline p-3 pl-6 uppercase tracking-wider">Date</th>
-<th class="font-label-caps text-[10px] text-outline p-3 uppercase tracking-wider">Location</th>
-<th class="font-label-caps text-[10px] text-outline p-3 uppercase tracking-wider">Peak Flow</th>
-<th class="font-label-caps text-[10px] text-outline p-3 pr-6 text-right uppercase tracking-wider">Impact</th>
-</tr>
-</thead>
-<tbody class="font-data-mono text-data-mono text-[13px] divide-y divide-outline-variant/10">
-<tr class="hover:bg-surface-variant/30 transition-colors">
-<td class="p-3 pl-6 text-on-surface-variant">2023-08-14</td>
-<td class="p-3 text-on-surface">Thame Valley</td>
-<td class="p-3 text-secondary">3,450 m³/s</td>
-<td class="p-3 pr-6 text-right">
-<span class="inline-block px-2 py-0.5 rounded bg-error/10 text-error border border-error/20 text-[10px] uppercase font-bold tracking-widest">Severe</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-variant/30 transition-colors">
-<td class="p-3 pl-6 text-on-surface-variant">2021-06-15</td>
-<td class="p-3 text-on-surface">Melamchi</td>
-<td class="p-3 text-secondary">2,100 m³/s</td>
-<td class="p-3 pr-6 text-right">
-<span class="inline-block px-2 py-0.5 rounded bg-error/10 text-error border border-error/20 text-[10px] uppercase font-bold tracking-widest">Severe</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-variant/30 transition-colors">
-<td class="p-3 pl-6 text-on-surface-variant">2019-07-22</td>
-<td class="p-3 text-on-surface">Seti River</td>
-<td class="p-3 text-secondary">1,800 m³/s</td>
-<td class="p-3 pr-6 text-right">
-<span class="inline-block px-2 py-0.5 rounded bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20 text-[10px] uppercase font-bold tracking-widest">Moderate</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-variant/30 transition-colors">
-<td class="p-3 pl-6 text-on-surface-variant">2016-07-05</td>
-<td class="p-3 text-on-surface">Bhote Koshi</td>
-<td class="p-3 text-secondary">1,200 m³/s</td>
-<td class="p-3 pr-6 text-right">
-<span class="inline-block px-2 py-0.5 rounded bg-tertiary/10 text-tertiary border border-tertiary/20 text-[10px] uppercase font-bold tracking-widest">Minor</span>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- Small Data Correlation Cards -->
-<div class="glass-panel rounded-xl p-5 lg:col-span-4 flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20">
-<span class="material-symbols-outlined text-secondary">device_thermostat</span>
-</div>
-<div>
-<p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Temp vs Melt Rate</p>
-<p class="font-data-mono text-body-md text-on-surface flex items-center gap-2">
-                        0.85 <span class="text-[10px] bg-tertiary/20 text-tertiary px-1 rounded">High Correlation</span>
-</p>
-</div>
-</div>
-<div class="glass-panel rounded-xl p-5 lg:col-span-4 flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-<span class="material-symbols-outlined text-primary">vibration</span>
-</div>
-<div>
-<p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Seismic vs Flow</p>
-<p class="font-data-mono text-body-md text-on-surface flex items-center gap-2">
-                        0.42 <span class="text-[10px] bg-outline-variant/40 text-on-surface-variant px-1 rounded">Weak Correlation</span>
-</p>
-</div>
-</div>
-<div class="glass-panel rounded-xl p-5 lg:col-span-4 flex items-center gap-4 bg-error/5 border-error/20 relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-r from-error/10 to-transparent opacity-50 pointer-events-none"></div>
-<div class="w-12 h-12 rounded-full bg-error/20 flex items-center justify-center border border-error/30 relative z-10">
-<span class="material-symbols-outlined text-error">landscape</span>
-</div>
-<div class="relative z-10">
-<p class="font-label-caps text-[10px] text-error uppercase tracking-widest mb-1">Soil Saturation vs Failure</p>
-<p class="font-data-mono text-body-md text-on-surface flex items-center gap-2">
-                        0.92 <span class="text-[10px] bg-error/20 text-error px-1 rounded animate-pulse">Critical</span>
-</p>
-</div>
-</div>
-</div>
-</main>
-<!-- === SHARED COMPONENT: BottomNavBar (Mobile) === -->
-<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center lg:hidden px-4 pb-safe h-20 bg-surface-container-highest/90 dark:bg-surface-container-highest/90 backdrop-blur-lg rounded-t-xl border-t border-outline-variant/40 shadow-2xl">
-<a href="CommandDashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90">
-<span class="material-symbols-outlined">home</span>
-<span class="font-label-caps text-[10px] mt-1">Home</span>
-</a>
-<a href="GISMap.html" class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90">
-<span class="material-symbols-outlined">map</span>
-<span class="font-label-caps text-[10px] mt-1">Map</span>
-</a>
-<a href="Alerts.html" class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90 relative">
-<span class="material-symbols-outlined">warning</span>
-<span class="font-label-caps text-[10px] mt-1">Alerts</span>
-<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
-</a>
-<!-- Active Tab Mobile: Data (Maps to Analytics intent) -->
-<a href="Analysis.html" class="flex flex-col items-center justify-center bg-secondary/20 text-secondary rounded-xl p-2 Tactile haptic-ready scale-90">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
-<span class="font-label-caps text-[10px] mt-1 font-bold">Data</span>
-</a>
-<a href="About.html" class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-variant Tactile haptic-ready scale-90">
-<span class="material-symbols-outlined">settings</span>
-<span class="font-label-caps text-[10px] mt-1">Settings</span>
-</a>
-</nav>
-<script id="dynamic-data-v2">
+<body class="h-screen flex flex-col font-sans overflow-hidden">
 
-const ws = new WebSocket('ws://localhost:8000/ws/telemetry');
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.type === "alert") {
-        const alertBox = document.createElement('div');
-        alertBox.style = "position: fixed; top: 0; width: 100%; background: #93000a; color: white; padding: 16px; text-align: center; z-index: 9999; font-weight: bold; font-family: 'JetBrains Mono', monospace;";
-        alertBox.innerText = "GLOBAL AI ALERT: " + data.message;
-        document.body.prepend(alertBox);
-        setTimeout(() => alertBox.remove(), 8000);
-    }
-    
-    // Auto-update any element with specific classes if we are on a dashboard
-    if (data.type === "telemetry" && window.location.pathname.includes("CommandDashboard")) {
-        // Simple DOM update hack for Command Dashboard
-        const displays = document.querySelectorAll('.font-display-lg.text-secondary.leading-none');
-        if (displays.length >= 3) {
-            displays[0].innerText = data.waterLevel.toFixed(1);
-            displays[1].innerText = data.rainfall24h.toFixed(1);
-            displays[2].innerText = data.temperature.toFixed(1);
+    <header class="h-14 border-b border-white/10 flex items-center justify-between px-6 bg-bgPanel z-50 shrink-0">
+        <div class="flex items-center gap-3 w-1/4">
+            <span class="material-symbols-outlined text-accent text-2xl">satellite_alt</span>
+            <span class="font-bold tracking-[0.2em] text-lg text-white">GLOF SENTINEL</span>
+            <span class="text-xs text-textSecondary ml-2 font-mono border border-white/10 px-2 py-0.5 rounded uppercase">EXECUTIVE DASHBOARD</span>
+        </div>
+        
+        <!-- Global Search -->
+        <div class="flex-1 max-w-2xl relative px-4">
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1.5 text-textSecondary text-[20px]">search</span>
+                <input type="text" id="global-search" placeholder="Search Lakes, Rivers, Regions..." class="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-accent focus:bg-white/10 transition-colors" autocomplete="off">
+            </div>
+            <div id="search-results" class="absolute top-full left-4 right-4 mt-1 bg-bgPanel border border-white/10 rounded-lg shadow-xl hidden z-50 max-h-64 overflow-y-auto"></div>
+        </div>
+
+        <div class="w-1/4 flex justify-end">
+            <span class="text-xs text-textSecondary bg-white/5 px-3 py-1 rounded-full border border-white/10" id="last-sync">Syncing...</span>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <nav class="w-64 flex-none border-r border-white/10 bg-bgPanel z-40 flex flex-col py-4 overflow-hidden shrink-0">
+            <div class="flex flex-col gap-2 w-64">
+                <a href="index.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">public</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Global Overview</span>
+                </a>
+                <a href="registry.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">table_view</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Global Registry</span>
+                </a>
+                <a href="lake_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">analytics</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Lake Intelligence</span>
+                </a>
+                <a href="river_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">waves</span>
+                    <span class="text-sm font-medium whitespace-nowrap">River Intelligence</span>
+                </a>
+                <a href="LiveMonitoring.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">speed</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Live Monitoring</span>
+                </a>
+                <a href="Alerts.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">warning</span>
+                    <span class="text-sm font-medium whitespace-nowrap flex-1">Alert Center</span>
+                </a>
+                <a href="Analysis.html" class="nav-item active bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined shrink-0">insights</span>
+                    <span class="text-sm font-medium whitespace-nowrap">Analytics</span>
+                </a>
+            </div>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto p-6 bg-bgMain">
+            <h1 class="text-3xl font-bold text-white tracking-tight mb-8">Executive Analytics</h1>
+
+            <!-- Top KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-panel p-4 rounded-xl">
+                    <span class="text-xs text-textSecondary uppercase tracking-wider">Active Nodes</span>
+                    <div class="text-3xl font-bold text-white mt-1 font-mono" id="kpi-nodes">--</div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border-t-2 border-t-riskCritical">
+                    <span class="text-xs text-textSecondary uppercase tracking-wider">Critical Alerts</span>
+                    <div class="text-3xl font-bold text-riskCritical mt-1 font-mono" id="kpi-alerts">--</div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl">
+                    <span class="text-xs text-textSecondary uppercase tracking-wider">Data Latency</span>
+                    <div class="text-3xl font-bold text-accent mt-1 font-mono" id="kpi-latency">--</div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl">
+                    <span class="text-xs text-textSecondary uppercase tracking-wider">System Uptime</span>
+                    <div class="text-3xl font-bold text-riskLow mt-1 font-mono" id="kpi-uptime">--</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Regional Risk Distribution -->
+                <div class="glass-panel p-6 rounded-xl">
+                    <h3 class="text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/10 pb-2">Regional Risk Distribution</h3>
+                    <div class="h-64"><canvas id="regionalChart"></canvas></div>
+                </div>
+
+                <!-- Feature Importance Aggregation -->
+                <div class="glass-panel p-6 rounded-xl">
+                    <h3 class="text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/10 pb-2">Top Global Risk Drivers (AI Feature Importance)</h3>
+                    <div class="h-64"><canvas id="driversChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Top Growing Lakes Ranking -->
+            <div class="mt-6 glass-panel p-6 rounded-xl">
+                <h3 class="text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/10 pb-2">Lake Expansion Ranking (Fastest Growing)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-textSecondary uppercase bg-white/5">
+                            <tr>
+                                <th class="px-6 py-3">Lake Name</th>
+                                <th class="px-6 py-3">Region</th>
+                                <th class="px-6 py-3">Area (Current)</th>
+                                <th class="px-6 py-3">YoY Growth</th>
+                                <th class="px-6 py-3">Associated Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lake-table-body">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let regChart, drvChart;
+
+        async function fetchAnalytics() {
+            try {
+                const sumRes = await fetch('/api/dashboard-summary');
+                if(sumRes.ok) {
+                    const data = await sumRes.json();
+                    document.getElementById('kpi-nodes').innerText = data.activeNodes || 128;
+                    document.getElementById('kpi-alerts').innerText = data.criticalAlerts || 3;
+                    document.getElementById('kpi-latency').innerText = data.dataLatency || '45ms';
+                    document.getElementById('kpi-uptime').innerText = data.systemUptime || '99.98%';
+                    document.getElementById('last-sync').innerText = 'Sync: ' + data.lastSync;
+                }
+            } catch(e) { console.error('Summary API fail', e); }
+
+            // Initialize Charts
+            const rCtx = document.getElementById('regionalChart').getContext('2d');
+            regChart = new Chart(rCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Himalayas', 'Andes', 'Alps', 'Karakoram'],
+                    datasets: [
+                        { label: 'Critical', data: [3, 1, 0, 0], backgroundColor: '#EF4444' },
+                        { label: 'High', data: [8, 2, 1, 1], backgroundColor: '#F97316' },
+                        { label: 'Moderate', data: [15, 8, 4, 2], backgroundColor: '#F59E0B' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#94A3B8'} }, y: { stacked: true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#94A3B8'} } }, plugins: { legend: { labels: {color: '#E2E8F0'} } } }
+            });
+
+            const dCtx = document.getElementById('driversChart').getContext('2d');
+            drvChart = new Chart(dCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Rainfall Intensity', 'Glacier Melt (Temp)', 'Lake Area Expansion', 'Elevation/Slope Factor', 'Seasonal Index'],
+                    datasets: [{
+                        data: [35, 25, 20, 10, 10],
+                        backgroundColor: ['#3B82F6', '#EF4444', '#F97316', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: {color: '#E2E8F0'} } } }
+            });
+
+            // Populate table
+            const tbody = document.getElementById('lake-table-body');
+            tbody.innerHTML = `
+                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                    <td class="px-6 py-4 font-bold text-white">South Lhonak</td>
+                    <td class="px-6 py-4 text-textSecondary">Sikkim, Himalayas</td>
+                    <td class="px-6 py-4 font-mono text-accent">1.62 km²</td>
+                    <td class="px-6 py-4 font-mono text-riskCritical">+15.4%</td>
+                    <td class="px-6 py-4"><span class="bg-riskCritical text-white text-[10px] px-2 py-0.5 rounded">CRITICAL</span></td>
+                </tr>
+                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                    <td class="px-6 py-4 font-bold text-white">Thorthormi Lake</td>
+                    <td class="px-6 py-4 text-textSecondary">Bhutan, Himalayas</td>
+                    <td class="px-6 py-4 font-mono text-accent">3.40 km²</td>
+                    <td class="px-6 py-4 font-mono text-riskCritical">+12.1%</td>
+                    <td class="px-6 py-4"><span class="bg-riskCritical text-white text-[10px] px-2 py-0.5 rounded">CRITICAL</span></td>
+                </tr>
+                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                    <td class="px-6 py-4 font-bold text-white">Imja Tsho</td>
+                    <td class="px-6 py-4 text-textSecondary">Khumbu, Nepal</td>
+                    <td class="px-6 py-4 font-mono text-accent">1.28 km²</td>
+                    <td class="px-6 py-4 font-mono text-riskHigh">+8.2%</td>
+                    <td class="px-6 py-4"><span class="bg-riskHigh text-white text-[10px] px-2 py-0.5 rounded">HIGH</span></td>
+                </tr>
+                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                    <td class="px-6 py-4 font-bold text-white">Shisper Lake</td>
+                    <td class="px-6 py-4 text-textSecondary">Pakistan, Karakoram</td>
+                    <td class="px-6 py-4 font-mono text-accent">0.80 km²</td>
+                    <td class="px-6 py-4 font-mono text-riskHigh">+7.5%</td>
+                    <td class="px-6 py-4"><span class="bg-riskHigh text-white text-[10px] px-2 py-0.5 rounded">HIGH</span></td>
+                </tr>
+            `;
         }
-    }
-};
 
-</script>
-</body></html>
+        fetchAnalytics();
+    </script>
+    <script src="js/search.js"></script>
+</body>
+</html>
