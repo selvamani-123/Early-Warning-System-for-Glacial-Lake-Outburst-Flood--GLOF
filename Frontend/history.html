@@ -269,9 +269,6 @@
                 renderCharts(data);
                 renderTimeline(data.historical_events);
                 
-                // Hide replay panel until an event is selected
-                document.getElementById('replay-panel').classList.add('hidden');
-                
             } catch (err) {
                 console.error(err);
                 document.getElementById('loading').classList.add('hidden');

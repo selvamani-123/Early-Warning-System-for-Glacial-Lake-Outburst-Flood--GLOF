@@ -4,6 +4,7 @@ from app.core.database import get_db
 
 router = APIRouter()
 
+@router.get("")
 @router.get("/")
 async def get_live_monitoring():
     return {"message": "Live Monitoring is active via WebSocket at /ws/telemetry"}

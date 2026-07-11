@@ -4,6 +4,7 @@ import asyncio
 
 router = APIRouter()
 
+@router.get("")
 @router.get("/")
 async def get_historical_analysis(lake_id: str = Query(None, description="Filter by lake ID"), time_window: str = Query("30d", description="Time window")):
     db = get_db()

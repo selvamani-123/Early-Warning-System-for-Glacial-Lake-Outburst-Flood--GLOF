@@ -200,8 +200,9 @@
             }
             
             // Connect to Backend WebSocket
-            // For production WSS, we need the origin host. If API_BASE is empty (Vercel proxy), construct it.
-            let base = window.API_BASE || (window.location.protocol + "//" + window.location.host);
+            // For production WSS, we must bypass Vercel because it drops WebSockets. 
+            // If window.API_BASE is empty (Vercel), we connect directly to Render.
+            let base = window.API_BASE || "https://early-warning-system-for-glacial-lake.onrender.com";
             let wsUrl = base.replace('http', 'ws');
             ws = new WebSocket(`${wsUrl}/api/v1/monitoring/ws/telemetry?lake_id=${lakeId}`);
             

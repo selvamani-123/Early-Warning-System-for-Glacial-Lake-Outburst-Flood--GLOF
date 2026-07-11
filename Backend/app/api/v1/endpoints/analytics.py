@@ -7,6 +7,7 @@ from datetime import datetime
 
 router = APIRouter()
 
+@router.get("")
 @router.get("/")
 async def get_analytics():
     return {"message": "Analytics"}

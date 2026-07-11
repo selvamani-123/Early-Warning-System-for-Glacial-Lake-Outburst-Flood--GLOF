@@ -4,6 +4,7 @@ from typing import List, Optional
 
 router = APIRouter()
 
+@router.get("")
 @router.get("/")
 async def get_alerts(
     status: Optional[str] = Query(None, description="Filter by status (e.g., ACTIVE, HISTORICAL)"),
