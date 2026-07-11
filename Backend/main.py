@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import logging
+import os
 
-from utils.database import connect_to_mongo, close_mongo_connection
-from utils.background_jobs import start_scheduler
-from routes import predictions, analytics, alerts, map_data, websocket
+from app.core.database import connect_to_mongo, close_mongo_connection
+from app.tasks.scheduler import start_scheduler
+from app.api.v1.router import api_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,35 +15,36 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="GLOF Sentinel API",
-    description="Early Warning System for Glacial Lake Outburst Floods powered by Machine Learning",
+    description="Global Glacier Lake Intelligence & Early Warning Platform",
     version="2.0.0"
 )
 
 # Configure CORS
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# MongoDB Lifecycle
 @app.on_event("startup")
-async def startup_db_client():
+async def startup_event():
     await connect_to_mongo()
     start_scheduler()
 
 @app.on_event("shutdown")
-async def shutdown_db_client():
+async def shutdown_event():
     await close_mongo_connection()
 
-# Include Routers
-app.include_router(predictions.router)
-app.include_router(analytics.router)
-app.include_router(alerts.router)
-app.include_router(map_data.router)
-app.include_router(websocket.router)
+# Include API Router
+app.include_router(api_router, prefix="/api/v1")
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "version": "2.0.0"}
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
@@ -53,7 +55,9 @@ async def global_exception_handler(request, exc):
     )
 
 # Serve Vanilla HTML Frontend
-app.mount("/", StaticFiles(directory="../Frontend", html=True), name="static")
+frontend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Frontend")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn

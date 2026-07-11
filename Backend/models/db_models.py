@@ -5,6 +5,8 @@ from typing import Optional
 class DBAlert(BaseModel):
     severity: str
     message: str
+    lake_id: Optional[str] = None
+    status: str = "ACTIVE"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 class DBPrediction(BaseModel):

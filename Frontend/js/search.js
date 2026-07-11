@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load data from backend (lakes and rivers)
     Promise.all([
-        fetch('http://localhost:8000/api/map-data/lakes').then(res => res.json()).catch(() => ({features:[]})),
-        fetch('http://localhost:8000/api/map-data/rivers').then(res => res.json()).catch(() => ({features:[]}))
+        fetch(`${window.API_BASE}/api/v1/registry/lakes`).then(res => res.json()).catch(() => ({features:[]})),
+        fetch(`${window.API_BASE}/api/v1/registry/rivers`).then(res => res.json()).catch(() => ({features:[]}))
     ]).then(([lakesData, riversData]) => {
         
         // Process Lakes

@@ -43,63 +43,14 @@
         .nav-item.active { border-left: 3px solid theme('colors.accent'); background: rgba(59, 130, 246, 0.1); color: #fff;}
         .acknowledged { opacity: 0.5; filter: grayscale(1); }
     </style>
+    <script src="js/layout.js"></script>
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden">
 
-    <header class="h-14 border-b border-white/10 flex items-center justify-between px-6 bg-bgPanel z-50 shrink-0">
-        <div class="flex items-center gap-3 w-1/4">
-            <span class="material-symbols-outlined text-accent text-2xl">satellite_alt</span>
-            <span class="font-bold tracking-[0.2em] text-lg text-white">GLOF SENTINEL</span>
-            <span class="text-xs text-textSecondary ml-2 font-mono border border-white/10 px-2 py-0.5 rounded uppercase">INCIDENT MANAGEMENT</span>
-        </div>
-
-        <!-- Global Search -->
-        <div class="flex-1 max-w-2xl relative px-4">
-            <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1.5 text-textSecondary text-[20px]">search</span>
-                <input type="text" id="global-search" placeholder="Search Lakes, Rivers, Regions..." class="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-accent focus:bg-white/10 transition-colors" autocomplete="off">
-            </div>
-            <div id="search-results" class="absolute top-full left-4 right-4 mt-1 bg-bgPanel border border-white/10 rounded-lg shadow-xl hidden z-50 max-h-64 overflow-y-auto"></div>
-        </div>
-
-        <div class="flex justify-end w-1/4">
-            <span class="material-symbols-outlined text-textSecondary hover:text-white cursor-pointer transition-colors">notifications</span>
-        </div>
-    </header>
+    <app-header></app-header>
 
     <div class="flex flex-1 overflow-hidden">
-        <nav class="w-64 flex-none border-r border-white/10 bg-bgPanel z-40 flex flex-col py-4 overflow-hidden shrink-0">
-            <div class="flex flex-col gap-2 w-64">
-                <a href="index.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">public</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Global Overview</span>
-                </a>
-                <a href="registry.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">table_view</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Global Registry</span>
-                </a>
-                <a href="lake_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">analytics</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Lake Intelligence</span>
-                </a>
-                <a href="river_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">waves</span>
-                    <span class="text-sm font-medium whitespace-nowrap">River Intelligence</span>
-                </a>
-                <a href="LiveMonitoring.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">speed</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Live Monitoring</span>
-                </a>
-                <a href="Alerts.html" class="nav-item active bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">warning</span>
-                    <span class="text-sm font-medium whitespace-nowrap flex-1">Alert Center</span>
-                </a>
-                <a href="Analysis.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">insights</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Analytics</span>
-                </a>
-            </div>
-        </nav>
+        <app-sidebar></app-sidebar>
 
         <main class="flex-1 overflow-y-auto p-6 bg-bgMain max-w-5xl mx-auto w-full">
             <div class="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
@@ -130,10 +81,11 @@
             container.innerHTML = '<div class="text-center py-10 text-textSecondary"><span class="material-symbols-outlined text-4xl animate-spin">sync</span><p class="mt-2">Fetching live alerts...</p></div>';
             
             try {
-                const res = await fetch('/api/alerts');
+                const res = await fetch(`${window.API_BASE}/api/v1/alerts/`);
                 let alerts = [];
                 if(res.ok) {
-                    alerts = await res.json();
+                    const data = await res.json();
+                    alerts = data.alerts || [];
                 } else {
                     // Fallback stub data if API is empty/unreachable
                     alerts = [
@@ -149,13 +101,20 @@
 
                 container.innerHTML = '';
                 alerts.forEach(alert => {
-                    const isCritical = alert.severity === 'CRITICAL';
-                    const colorClass = isCritical ? 'riskCritical' : (alert.severity === 'HIGH' ? 'riskHigh' : 'riskModerate');
+                    const severity = alert.risk_level || alert.severity || 'UNKNOWN';
+                    const isCritical = severity === 'CRITICAL';
+                    const isHigh = severity === 'HIGH';
+                    const colorClass = isCritical ? 'riskCritical' : (isHigh ? 'riskHigh' : 'riskModerate');
                     const icon = isCritical ? 'error' : 'warning';
-                    const actionText = isCritical ? 'Activate Downstream Warning Systems' : 'Increase Observation Frequency';
+                    
+                    const actions = Array.isArray(alert.recommended_actions) ? alert.recommended_actions.join(' • ') : 'Monitor shifting environmental indicators.';
+                    
+                    const affected = (alert.affected_settlements && alert.affected_settlements.length > 0) ? `Vulnerable settlements: ${alert.affected_settlements.join(', ')}` : 'No immediate settlement impact.';
+                    
+                    const message = alert.message || `AI Assessment at ${alert.lake_name || 'unknown location'} indicates ${alert.overall_situation || 'Elevated'} situation. Environmental Stress is ${alert.environmental_stress_category || 'Elevated'}. ${affected}`;
 
                     const html = `
-                    <div class="glass-panel rounded-xl overflow-hidden border-l-4 border-l-${colorClass}" id="alert-${alert.id}">
+                    <div class="glass-panel rounded-xl overflow-hidden border-l-4 border-l-${colorClass}" id="alert-${alert.id || alert._id || Math.random()}">
                         <div class="p-6 bg-${colorClass}/5">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-start gap-4">
@@ -164,20 +123,21 @@
                                     </div>
                                     <div>
                                         <div class="flex gap-2 items-center mb-1">
-                                            <span class="bg-${colorClass} text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">${alert.severity}</span>
+                                            <span class="bg-${colorClass} text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">${severity}</span>
                                             <span class="font-mono text-xs text-textSecondary">${new Date(alert.timestamp).toLocaleTimeString()}</span>
+                                            <span class="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded font-mono">${alert.assessment_mode || 'System'}</span>
                                         </div>
-                                        <h2 class="text-xl font-bold text-white mb-2">System Alert</h2>
-                                        <p class="text-sm text-textSecondary max-w-2xl">${alert.message}</p>
+                                        <h2 class="text-xl font-bold text-white mb-2">Automated Early Warning</h2>
+                                        <p class="text-sm text-textSecondary max-w-2xl">${message}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-                                <div class="text-sm font-medium text-${colorClass} flex items-center gap-2">
-                                    <span class="material-symbols-outlined">contact_phone</span> ACTION REQ: ${actionText}
+                                <div class="text-sm font-medium text-${colorClass} flex items-center gap-2 max-w-3xl truncate">
+                                    <span class="material-symbols-outlined shrink-0">contact_phone</span> <span class="truncate">ACTION REQ: ${actions}</span>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button onclick="ackAlert('${alert.id}')" class="px-4 py-2 text-sm font-bold bg-${colorClass} text-white rounded transition-colors hover:brightness-110 shadow-lg">Acknowledge</button>
+                                <div class="flex gap-2 shrink-0 ml-4">
+                                    <button onclick="ackAlert('${alert.id || alert._id || 'alert'}')" class="px-4 py-2 text-sm font-bold bg-${colorClass} text-white rounded transition-colors hover:brightness-110 shadow-lg">Acknowledge</button>
                                 </div>
                             </div>
                         </div>

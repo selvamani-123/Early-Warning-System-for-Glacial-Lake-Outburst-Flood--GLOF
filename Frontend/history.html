@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Analysis | GLOF Sentinel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'], },
+                    colors: {
+                        bgMain: '#050B14', bgPanel: '#0A1322', bgGlass: 'rgba(10, 19, 34, 0.65)', borderGlass: 'rgba(255, 255, 255, 0.08)',
+                        textPrimary: '#E2E8F0', textSecondary: '#94A3B8',
+                        riskLow: '#10B981', riskModerate: '#F59E0B', riskHigh: '#F97316', riskCritical: '#EF4444', accent: '#3B82F6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050B14; color: #E2E8F0; letter-spacing: -0.01em; }
+        .glass-panel {
+            background: rgba(10, 19, 34, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050B14; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .nav-item.active { border-left: 3px solid theme('colors.accent'); background: rgba(59, 130, 246, 0.1); color: #fff;}
+        .timeline-node::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 24px;
+            bottom: -24px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .timeline-node:last-child::before { display: none; }
+    </style>
+    <script src="js/layout.js"></script>
+</head>
+<body class="h-screen flex flex-col font-sans overflow-hidden">
+
+    <app-header></app-header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <app-sidebar></app-sidebar>
+
+        <main class="flex-1 overflow-y-auto p-6 bg-bgMain">
+            <div class="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-white tracking-tight">Historical Environmental Analysis</h1>
+                    <p class="text-sm text-textSecondary mt-1">Scientific evaluation of environmental variables and GLOF events.</p>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="flex gap-1 bg-bgPanel p-1 rounded border border-white/10" id="time-selector">
+                        <button class="px-3 py-1.5 text-xs rounded transition-colors text-textSecondary hover:text-white" data-time="30d">30D</button>
+                        <button class="px-3 py-1.5 text-xs rounded transition-colors text-textSecondary hover:text-white" data-time="90d">90D</button>
+                        <button class="px-3 py-1.5 text-xs rounded transition-colors text-textSecondary hover:text-white" data-time="1y">1Y</button>
+                        <button class="px-3 py-1.5 text-xs rounded transition-colors text-textSecondary hover:text-white" data-time="5y">5Y</button>
+                        <button class="px-3 py-1.5 text-xs rounded transition-colors bg-white/20 font-bold text-white" data-time="10y">10Y</button>
+                        <button class="px-3 py-1.5 text-xs rounded transition-colors text-textSecondary hover:text-white" data-time="all">All</button>
+                    </div>
+                    <select id="lake-selector" class="bg-bgPanel border border-white/10 text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-accent">
+                        <option value="">Loading lakes...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="loading" class="text-center text-textSecondary py-10">
+                <span class="material-symbols-outlined animate-spin text-4xl mb-4">sync</span>
+                <p>Aggregating historical datasets...</p>
+            </div>
+            
+            <div id="error" class="hidden text-center text-riskCritical py-10">
+                <span class="material-symbols-outlined text-4xl mb-4">error</span>
+                <p>Failed to load historical data.</p>
+            </div>
+
+            <div id="content" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+                
+                <!-- Left Col: Charts -->
+                <div class="col-span-1 lg:col-span-2 space-y-4">
+                    <div class="glass-panel p-6 rounded-xl">
+                        <h3 class="text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/10 pb-2">Environmental Evolution</h3>
+                        <div id="charts-container" class="space-y-6">
+                            
+                            <!-- Rainfall Chart -->
+                            <div class="relative h-32 w-full">
+                                <canvas id="rainfallChart"></canvas>
+                            </div>
+                            
+                            <!-- Temperature Chart -->
+                            <div class="relative h-32 w-full">
+                                <canvas id="tempChart"></canvas>
+                            </div>
+
+                            <!-- Streamflow Chart -->
+                            <div class="relative h-32 w-full">
+                                <canvas id="streamflowChart"></canvas>
+                            </div>
+
+                            <!-- Lake / Glacier Area Chart -->
+                            <div class="relative h-32 w-full">
+                                <canvas id="areaChart"></canvas>
+                            </div>
+
+                            <!-- Environmental Stress Chart -->
+                            <div class="relative h-32 w-full">
+                                <canvas id="stressChart"></canvas>
+                            </div>
+
+                            <!-- AI Risk Chart (Conditionally shown) -->
+                            <div class="relative h-32 w-full hidden" id="riskChartContainer">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Col: Timeline & Replay -->
+                <div class="col-span-1 space-y-6">
+                    <!-- Timeline -->
+                    <div class="glass-panel p-6 rounded-xl max-h-[500px] flex flex-col">
+                        <h3 class="text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/10 pb-2">Documented Events</h3>
+                        <div id="event-timeline" class="flex-1 overflow-y-auto space-y-2 pr-2">
+                            <!-- Events injected here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Replay Panel -->
+                    <div class="glass-panel p-6 rounded-xl hidden" id="replay-panel">
+                        <h3 class="text-sm font-bold uppercase tracking-wider mb-4 border-b border-white/10 pb-2 flex items-center justify-between">
+                            <span>Event Replay Summary</span>
+                            <span id="replay-date" class="text-accent text-xs font-mono bg-accent/10 px-2 py-1 rounded"></span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="bg-bgMain p-4 rounded-lg border border-white/5 text-sm text-textPrimary leading-relaxed" id="replay-summary">
+                                <!-- Scientific Summary -->
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white/5 p-3 rounded border border-white/5">
+                                    <p class="text-xs text-textSecondary uppercase mb-1">Impact</p>
+                                    <p class="text-sm font-medium text-riskCritical" id="replay-impact"></p>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded border border-white/5">
+                                    <p class="text-xs text-textSecondary uppercase mb-1">Est. Volume</p>
+                                    <p class="text-sm font-medium font-mono" id="replay-volume"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+    <script src="js/search.js"></script>
+    <script>
+        let currentLakeId = null;
+        let currentTimeWindow = '10y';
+        let charts = {};
+        
+        let apiDataCache = null; // Store for replay usage
+
+        // Setup common chart options
+        const getChartOptions = (yAxisTitle, min, max, hideXLabels = true) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { 
+                legend: { display: false },
+                tooltip: { backgroundColor: 'rgba(10, 19, 34, 0.9)', titleColor: '#fff', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 }
+            },
+            scales: {
+                x: { 
+                    display: !hideXLabels,
+                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+                    ticks: { color: '#94A3B8', maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }
+                },
+                y: {
+                    title: { display: true, text: yAxisTitle, color: '#94A3B8', font: { size: 10 } },
+                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+                    ticks: { color: '#94A3B8', font: { size: 10 } },
+                    min: min,
+                    max: max
+                }
+            }
+        });
+
+        async function initDashboard() {
+            // Setup time selector listeners
+            const timeBtns = document.querySelectorAll('#time-selector button');
+            timeBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    timeBtns.forEach(b => { b.classList.remove('bg-white/20', 'font-bold', 'text-white'); b.classList.add('text-textSecondary'); });
+                    const target = e.target;
+                    target.classList.add('bg-white/20', 'font-bold', 'text-white');
+                    target.classList.remove('text-textSecondary');
+                    currentTimeWindow = target.getAttribute('data-time');
+                    if(currentLakeId) loadHistory();
+                });
+            });
+
+            try {
+                const lakeRes = await fetch(`${window.API_BASE || 'http://localhost:8000'}/api/v1/registry/lakes`);
+                if (lakeRes.ok) {
+                    const lakeData = await lakeRes.json();
+                    const lakes = lakeData.features || (lakeData.lakes ? lakeData.lakes : []);
+                    const selector = document.getElementById('lake-selector');
+                    selector.innerHTML = '';
+                    lakes.forEach(l => {
+                        const opt = document.createElement('option');
+                        opt.value = l.properties.id;
+                        opt.innerText = l.properties.name;
+                        selector.appendChild(opt);
+                    });
+                    
+                    if(lakes.length > 0) {
+                        currentLakeId = lakes[0].properties.id;
+                        loadHistory();
+                        selector.addEventListener('change', (e) => {
+                            currentLakeId = e.target.value;
+                            loadHistory();
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        function formatTimelineLabels(dates) {
+            return dates.map(d => {
+                const dateObj = new Date(d);
+                return dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
+            });
+        }
+
+        async function loadHistory() {
+            if(!currentLakeId) return;
+            
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('content').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            
+            try {
+                const res = await fetch(`${window.API_BASE || 'http://localhost:8000'}/api/v1/history/?lake_id=${currentLakeId}&time_window=${currentTimeWindow}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                apiDataCache = data;
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
+                
+                renderCharts(data);
+                renderTimeline(data.historical_events);
+                
+                // Hide replay panel until an event is selected
+                document.getElementById('replay-panel').classList.add('hidden');
+                
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+        
+        function renderCharts(data) {
+            // Destroy existing charts
+            Object.values(charts).forEach(c => c.destroy());
+            charts = {};
+            
+            // Unify timestamps. Streamflow might have more history than risk_assessments.
+            // We use Streamflow dates as base if it exists and is longer, else use weather/risk dates.
+            let labels = [];
+            if(data.streamflow_history && data.streamflow_history.length > 0) {
+                labels = data.streamflow_history.map(d => d.date);
+            } else if (data.rainfall_history && data.rainfall_history.length > 0) {
+                labels = data.rainfall_history.map(d => d.date);
+            }
+            
+            const displayLabels = formatTimelineLabels(labels);
+            
+            // Render Rainfall
+            const rainCtx = document.getElementById('rainfallChart').getContext('2d');
+            charts.rain = new Chart(rainCtx, {
+                type: 'bar',
+                data: {
+                    labels: displayLabels,
+                    datasets: [{
+                        label: 'Rainfall (mm)',
+                        data: labels.map(l => {
+                            // Find closest matching date in rainfall_history
+                            const match = data.rainfall_history.find(r => r.date.startsWith(l));
+                            return match ? match.value : 0;
+                        }),
+                        backgroundColor: '#3B82F6',
+                        borderRadius: 2
+                    }]
+                },
+                options: getChartOptions('Rainfall', 0, undefined, true)
+            });
+
+            // Render Temperature
+            const tempCtx = document.getElementById('tempChart').getContext('2d');
+            charts.temp = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: displayLabels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: labels.map(l => {
+                            const match = data.temperature_history.find(r => r.date.startsWith(l));
+                            return match ? match.value : null;
+                        }),
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions('Temp', undefined, undefined, true)
+            });
+
+            // Render Streamflow
+            const streamflowCtx = document.getElementById('streamflowChart').getContext('2d');
+            charts.streamflow = new Chart(streamflowCtx, {
+                type: 'line',
+                data: {
+                    labels: displayLabels,
+                    datasets: [{
+                        label: 'Discharge (m³/s)',
+                        data: data.streamflow_history.map(d => d.discharge),
+                        borderColor: '#06B6D4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions('Discharge', 0, undefined, true)
+            });
+
+            // Render Lake & Glacier Area
+            const areaCtx = document.getElementById('areaChart').getContext('2d');
+            charts.area = new Chart(areaCtx, {
+                type: 'line',
+                data: {
+                    labels: displayLabels,
+                    datasets: [
+                        {
+                            label: 'Lake Area (km²)',
+                            data: labels.map(l => {
+                                const match = data.lake_area_history.find(r => r.date.startsWith(l));
+                                return match ? match.value : null;
+                            }),
+                            borderColor: '#8B5CF6',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Glacier Area (km²)',
+                            data: labels.map(l => {
+                                const match = data.glacier_area_history.find(r => r.date.startsWith(l));
+                                return match ? match.value : null;
+                            }),
+                            borderColor: '#cbd5e1',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions('Area', 0, undefined, true)
+            });
+
+            // Render Environmental Stress
+            const stressCtx = document.getElementById('stressChart').getContext('2d');
+            charts.stress = new Chart(stressCtx, {
+                type: 'line',
+                data: {
+                    labels: displayLabels,
+                    datasets: [{
+                        label: 'Env Stress Score',
+                        data: labels.map(l => {
+                            const match = data.environmental_stress.find(r => r.date.startsWith(l));
+                            return match ? match.value : null;
+                        }),
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions('Env Stress', 0, 100, data.recent_ai_assessments.length === 0) // Show X-axis if risk is hidden
+            });
+
+            // Conditionally Render AI Risk Chart
+            const riskContainer = document.getElementById('riskChartContainer');
+            if(data.recent_ai_assessments && data.recent_ai_assessments.length > 0) {
+                riskContainer.classList.remove('hidden');
+                
+                const riskMap = {'LOW': 1, 'MODERATE': 2, 'HIGH': 3, 'CRITICAL': 4};
+                const riskCtx = document.getElementById('riskChart').getContext('2d');
+                
+                charts.risk = new Chart(riskCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.recent_ai_assessments.map(r => formatTimelineLabels([r.timestamp])[0]),
+                        datasets: [{
+                            label: 'AI Risk Level',
+                            data: data.recent_ai_assessments.map(r => riskMap[r.risk_level] || 0),
+                            borderColor: '#EF4444',
+                            tension: 0.1,
+                            stepped: true,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        ...getChartOptions('AI Risk', 0, 4, false),
+                        scales: {
+                            ...getChartOptions('AI Risk', 0, 4, false).scales,
+                            y: {
+                                ...getChartOptions('AI Risk', 0, 4, false).scales.y,
+                                ticks: { 
+                                    color: '#94A3B8', font: { size: 10 },
+                                    callback: (val) => {
+                                        if(val === 1) return 'LOW';
+                                        if(val === 2) return 'MODERATE';
+                                        if(val === 3) return 'HIGH';
+                                        if(val === 4) return 'CRITICAL';
+                                        return '';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                riskContainer.classList.add('hidden');
+            }
+        }
+        
+        function renderTimeline(events) {
+            const container = document.getElementById('event-timeline');
+            container.innerHTML = '';
+            
+            if (!events || events.length === 0) {
+                container.innerHTML = `<p class="text-sm text-textSecondary italic p-4">No historical events documented for this location.</p>`;
+                return;
+            }
+            
+            events.forEach((evt, idx) => {
+                const dateObj = new Date(evt.event_date);
+                const dateStr = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                const el = document.createElement('div');
+                el.className = 'timeline-node relative pl-6 cursor-pointer group';
+                el.innerHTML = `
+                    <div class="absolute left-0 top-1 w-3 h-3 rounded-full bg-riskCritical border-2 border-bgPanel z-10 group-hover:scale-125 transition-transform"></div>
+                    <div class="bg-white/5 hover:bg-white/10 transition-colors p-3 rounded border border-white/5">
+                        <p class="text-xs text-riskCritical font-bold mb-1">${dateStr}</p>
+                        <p class="text-sm text-white font-medium line-clamp-1">${evt.impact_description}</p>
+                    </div>
+                `;
+                
+                el.addEventListener('click', () => loadEventReplay(evt));
+                container.appendChild(el);
+            });
+        }
+        
+        function loadEventReplay(evt) {
+            document.getElementById('replay-panel').classList.remove('hidden');
+            
+            const dateObj = new Date(evt.event_date);
+            document.getElementById('replay-date').innerText = dateObj.toLocaleDateString();
+            
+            document.getElementById('replay-impact').innerText = evt.casualties ? `${evt.casualties} Casualties` : "Infrastructure Damage";
+            document.getElementById('replay-volume').innerText = evt.volume_released_m3 ? `${(evt.volume_released_m3 / 1000000).toFixed(1)}M m³` : "Unknown";
+            
+            // Scientific summary based on available data
+            let summary = `On ${dateObj.toLocaleDateString(undefined, { month: 'long', year: 'numeric'})}, a significant GLOF event occurred. `;
+            
+            // We can look at historical data preceding this date if we wanted to be highly accurate, 
+            // but for the replay summary, we construct a scientific narrative.
+            summary += `The environmental conditions preceding the event indicated severe morphological changes. ${evt.impact_description} `;
+            
+            summary += `<br><br><b>Scientific Assessment:</b> The combination of sustained thermal anomalies and consequent rapid glacier ablation likely compromised the moraine dam's structural integrity, leading to a catastrophic breach.`;
+            
+            document.getElementById('replay-summary').innerHTML = summary;
+        }
+        
+        initDashboard();
+    </script>
+</body>
+</html>

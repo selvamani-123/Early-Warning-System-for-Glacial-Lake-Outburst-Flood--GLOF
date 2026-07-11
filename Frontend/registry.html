@@ -37,67 +37,17 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         .nav-item.active { border-left: 3px solid theme('colors.accent'); background: rgba(59, 130, 246, 0.1); color: #fff;}
     </style>
+    <script src="js/layout.js"></script>
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden">
 
-    <header class="h-14 border-b border-white/10 flex items-center justify-between px-6 bg-bgPanel z-50 shrink-0">
-        <div class="flex items-center gap-3 w-1/4">
-            <span class="material-symbols-outlined text-accent text-2xl">satellite_alt</span>
-            <span class="font-bold tracking-[0.2em] text-lg text-white">GLOF SENTINEL</span>
-            <span class="text-xs text-textSecondary ml-2 font-mono border border-white/10 px-2 py-0.5 rounded uppercase">DATA REGISTRY</span>
-        </div>
-        
-        <div class="flex-1 max-w-2xl relative px-4">
-            <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1.5 text-textSecondary text-[20px]">search</span>
-                <input type="text" id="global-search" placeholder="Search Lakes, Rivers, Regions..." class="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-accent focus:bg-white/10 transition-colors" autocomplete="off">
-            </div>
-            <div id="search-results" class="absolute top-full left-4 right-4 mt-1 bg-bgPanel border border-white/10 rounded-lg shadow-xl hidden z-50 max-h-64 overflow-y-auto"></div>
-        </div>
-
-        <div class="w-1/4 flex justify-end gap-3">
-            <button class="bg-white/5 border border-white/10 px-3 py-1 rounded text-xs hover:bg-white/10 transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span> Export CSV
-            </button>
-        </div>
-    </header>
+    <app-header></app-header>
 
     <div class="flex flex-1 overflow-hidden">
-        <nav class="w-64 flex-none border-r border-white/10 bg-bgPanel z-40 flex flex-col py-4 overflow-hidden shrink-0">
-            <div class="flex flex-col gap-2 w-64">
-                <a href="index.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">public</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Global Overview</span>
-                </a>
-                <a href="registry.html" class="nav-item active bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">table_view</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Global Registry</span>
-                </a>
-                <a href="lake_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">analytics</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Lake Intelligence</span>
-                </a>
-                <a href="river_intelligence.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">waves</span>
-                    <span class="text-sm font-medium whitespace-nowrap">River Intelligence</span>
-                </a>
-                <a href="LiveMonitoring.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">speed</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Live Monitoring</span>
-                </a>
-                <a href="Alerts.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">warning</span>
-                    <span class="text-sm font-medium whitespace-nowrap flex-1">Alert Center</span>
-                </a>
-                <a href="Analysis.html" class="nav-item hover:bg-white/5 flex items-center gap-4 px-4 py-3 text-textSecondary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined shrink-0">insights</span>
-                    <span class="text-sm font-medium whitespace-nowrap">Analytics</span>
-                </a>
-            </div>
-        </nav>
+        <app-sidebar></app-sidebar>
 
         <main class="flex-1 overflow-y-auto p-6 bg-bgMain">
-            <div class="flex justify-between items-end mb-6">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-white tracking-tight">Glacial Lakes Database</h1>
                     <p class="text-sm text-textSecondary mt-1">Comprehensive index of all monitored glacial lakes and their current ML-assessed risk states.</p>
@@ -118,7 +68,8 @@
             </div>
 
             <div class="glass-panel rounded-xl overflow-hidden border border-white/10">
-                <table class="w-full text-sm text-left">
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-sm text-left min-w-[800px]">
                     <thead class="text-xs text-textSecondary uppercase bg-white/5 border-b border-white/10">
                         <tr>
                             <th class="px-6 py-4">Lake Name</th>
@@ -138,6 +89,7 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </main>
     </div>
@@ -148,7 +100,7 @@
 
         async function fetchRegistry() {
             try {
-                const res = await fetch('/api/map-data/lakes');
+                const res = await fetch(`${window.API_BASE}/api/v1/registry/lakes`);
                 if(!res.ok) throw new Error("Failed to fetch");
                 const data = await res.json();
                 allLakes = data.features;
@@ -186,7 +138,7 @@
                     <td class="px-6 py-4 font-mono text-accent">${p.area_km2}</td>
                     <td class="px-6 py-4"><span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeClass}">${p.risk}</span></td>
                     <td class="px-6 py-4 text-right">
-                        <a href="lake_intelligence.html?id=${p.glacier_id}" class="text-accent hover:text-white flex items-center justify-end gap-1 text-xs font-bold transition-colors">
+                        <a href="lake_intelligence.html?id=${p.id}" class="text-accent hover:text-white flex items-center justify-end gap-1 text-xs font-bold transition-colors">
                             Analyze <span class="material-symbols-outlined text-[14px]">chevron_right</span>
                         </a>
                     </td>
