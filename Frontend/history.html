@@ -258,7 +258,7 @@
             document.getElementById('error').classList.add('hidden');
             
             try {
-                const res = await fetch(`${window.API_BASE}/api/v1/history/?lake_id=${currentLakeId}&time_window=${currentTimeWindow}`);
+                const res = await fetch(`${window.API_BASE}/api/v1/history?lake_id=${currentLakeId}&time_window=${currentTimeWindow}`);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
                 apiDataCache = data;

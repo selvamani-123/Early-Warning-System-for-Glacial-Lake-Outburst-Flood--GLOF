@@ -81,7 +81,7 @@
             container.innerHTML = '<div class="text-center py-10 text-textSecondary"><span class="material-symbols-outlined text-4xl animate-spin">sync</span><p class="mt-2">Fetching live alerts...</p></div>';
             
             try {
-                const res = await fetch(`${window.API_BASE}/api/v1/alerts/`);
+                const res = await fetch(`${window.API_BASE}/api/v1/alerts`);
                 let alerts = [];
                 if(res.ok) {
                     const data = await res.json();
