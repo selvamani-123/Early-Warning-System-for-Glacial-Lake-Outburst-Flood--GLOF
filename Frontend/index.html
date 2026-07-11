@@ -283,9 +283,8 @@
 
         // Load data assuming backend is running on same host, port 8000
         // In a real setup, configure base URL properly
-        const API_BASE = 'http://localhost:8000';
-        loadGeoJSON(`${API_BASE}/api/v1/registry/rivers`, () => riverStyle, null);
-        loadGeoJSON(`${API_BASE}/api/v1/registry/lakes`, lakeStyle, onEachLake);
+        loadGeoJSON(`${window.API_BASE}/api/v1/registry/rivers`, () => riverStyle, null);
+        loadGeoJSON(`${window.API_BASE}/api/v1/registry/lakes`, lakeStyle, onEachLake);
 
     </script>
     <script src="js/search.js"></script>

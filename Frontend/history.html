@@ -216,7 +216,7 @@
             });
 
             try {
-                const lakeRes = await fetch(`${window.API_BASE || 'http://localhost:8000'}/api/v1/registry/lakes`);
+                const lakeRes = await fetch(`${window.API_BASE}/api/v1/registry/lakes`);
                 if (lakeRes.ok) {
                     const lakeData = await lakeRes.json();
                     const lakes = lakeData.features || (lakeData.lakes ? lakeData.lakes : []);
@@ -258,7 +258,7 @@
             document.getElementById('error').classList.add('hidden');
             
             try {
-                const res = await fetch(`${window.API_BASE || 'http://localhost:8000'}/api/v1/history/?lake_id=${currentLakeId}&time_window=${currentTimeWindow}`);
+                const res = await fetch(`${window.API_BASE}/api/v1/history/?lake_id=${currentLakeId}&time_window=${currentTimeWindow}`);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
                 apiDataCache = data;

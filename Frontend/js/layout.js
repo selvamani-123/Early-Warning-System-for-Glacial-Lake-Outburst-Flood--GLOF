@@ -91,10 +91,6 @@ class AppSidebar extends HTMLElement {
                 ${linksHTML}
             </div>
             <div class="mt-auto px-4 pb-4">
-                <div class="bg-riskModerate/10 border border-riskModerate/20 rounded p-3 text-[10px] text-textSecondary mt-4">
-                    <div class="text-riskModerate font-bold mb-1 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">info</span> Caveat</div>
-                    Risk labels are derived from deterministic rules, not verified historical real-world GLOF events.
-                </div>
             </div>
         </nav>
         `;

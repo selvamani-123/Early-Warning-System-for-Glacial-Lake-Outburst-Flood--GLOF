@@ -306,7 +306,7 @@
             </div>`;
             
             try {
-                const res = await fetch(`${window.API_BASE || 'http://localhost:8000'}/api/v1/river/${targetRiverId}/streamflow?time_window=${timeWindow}`);
+                const res = await fetch(`${window.API_BASE}/api/v1/river/${targetRiverId}/streamflow?time_window=${timeWindow}`);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
                 

@@ -168,7 +168,7 @@
 
         async function initMonitoring() {
             try {
-                const res = await fetch(`${window.API_BASE || 'http://localhost:8000'}/api/v1/registry/lakes`);
+                const res = await fetch(`${window.API_BASE}/api/v1/registry/lakes`);
                 if (res.ok) {
                     const data = await res.json();
                     const lakes = data.features || (data.lakes ? data.lakes : []);
@@ -200,7 +200,9 @@
             }
             
             // Connect to Backend WebSocket
-            let wsUrl = (window.API_BASE || 'http://localhost:8000').replace('http', 'ws');
+            // For production WSS, we need the origin host. If API_BASE is empty (Vercel proxy), construct it.
+            let base = window.API_BASE || (window.location.protocol + "//" + window.location.host);
+            let wsUrl = base.replace('http', 'ws');
             ws = new WebSocket(`${wsUrl}/api/v1/monitoring/ws/telemetry?lake_id=${lakeId}`);
             
             ws.onopen = () => {
