@@ -348,6 +348,8 @@ Contributions are welcome! If you'd like to improve GLOF Sentinel:
 
 ---
 
-<p center>
+
+<p align="center">
   Made with ❤️ for Disaster Risk Reduction & High-Altitude Environmental Protection.
 </p>
+
