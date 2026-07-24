@@ -350,11 +350,6 @@ Contributions are welcome! If you'd like to improve GLOF Sentinel:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
----
 
 <p center>
   Made with ❤️ for Disaster Risk Reduction & High-Altitude Environmental Protection.
