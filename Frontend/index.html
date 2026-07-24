@@ -208,14 +208,20 @@
         // Initialize Map
         const map = L.map('map', {
             zoomControl: false,
-            attributionControl: false
+            attributionControl: false,
+            scrollWheelZoom: true,
+            doubleClickZoom: true,
+            boxZoom: true,
+            maxZoom: 19
         }).setView([20, 0], 2); // Global View
 
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // Base Layers
+        // Base Layers - Satellite Imagery with high maxZoom & maxNativeZoom support
         const esriImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 17
+            maxZoom: 19,
+            maxNativeZoom: 17,
+            attribution: 'Esri World Imagery'
         }).addTo(map);
 
         const darkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -363,6 +369,13 @@
                     </div>
                 `;
                 layer.bindPopup(popupContent);
+
+                layer.on('click', (e) => {
+                    if (feature.geometry && feature.geometry.coordinates) {
+                        const coords = feature.geometry.coordinates;
+                        map.flyTo([coords[1], coords[0]], 10, { duration: 1.2 });
+                    }
+                });
             }
         };
 
