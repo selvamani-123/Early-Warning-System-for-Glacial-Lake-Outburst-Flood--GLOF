@@ -76,7 +76,7 @@
             <div id="map" class="absolute inset-0 z-0"></div>
 
             <!-- Overlays -->
-            <div class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-6">
+            <div id="map-overlays" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-6 transition-all duration-500 ease-in-out opacity-100 transform translate-y-0 scale-100">
                 
                 <!-- Top Statistics Row -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl pointer-events-auto">
@@ -290,6 +290,22 @@
             }
         }
 
+        // Auto-hide glassmorphic overlay elements on map zoom-in (> zoom level 3)
+        const updateOverlayZoomState = () => {
+            const overlayContainer = document.getElementById('map-overlays');
+            if (!overlayContainer) return;
+            if (map.getZoom() > 3) {
+                overlayContainer.classList.add('opacity-0', 'pointer-events-none', 'scale-95', 'translate-y-2');
+                overlayContainer.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+            } else {
+                overlayContainer.classList.remove('opacity-0', 'pointer-events-none', 'scale-95', 'translate-y-2');
+                overlayContainer.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+            }
+        };
+
+        map.on('zoomend', updateOverlayZoomState);
+        map.on('zoom', updateOverlayZoomState);
+
         async function fetchRecentAlerts() {
             try {
                 const res = await fetch(`${window.API_BASE}/api/v1/alerts`);
@@ -302,10 +318,14 @@
 
                 container.innerHTML = '';
                 alerts.slice(0, 5).forEach(alert => {
-                    const risk = alert.overall_situation || alert.risk_level || 'HIGH';
+                    const risk = String(alert.overall_situation || alert.risk_level || alert.severity || 'HIGH').toUpperCase();
                     const color = risk === 'CRITICAL' ? 'bg-riskCritical' : (risk === 'HIGH' ? 'bg-riskHigh' : 'bg-riskModerate');
                     const title = alert.lake_name || alert.lake_id || 'Glacial Node';
-                    const msg = alert.message || 'Environmental stress indicators shifting.';
+                    const msg = alert.message 
+                        || (alert.recommended_actions && alert.recommended_actions[0]) 
+                        || alert.why_occurred 
+                        || alert.explanation 
+                        || 'Environmental stress indicators shifting.';
                     const timeAgo = alert.timestamp ? new Date(alert.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Recent';
 
                     const html = `
