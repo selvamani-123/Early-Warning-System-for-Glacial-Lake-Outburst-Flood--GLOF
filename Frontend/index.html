@@ -247,7 +247,9 @@
         function processDashboardStats(features) {
             let counts = { CRITICAL: 0, HIGH: 0, MODERATE: 0, LOW: 0, UNKNOWN: 0 };
             features.forEach(f => {
-                const r = (f.properties && f.properties.risk) ? f.properties.risk : 'LOW';
+                const r = (f.properties && (f.properties.risk || f.properties.current_risk || f.properties.risk_level)) 
+                    ? String(f.properties.risk || f.properties.current_risk || f.properties.risk_level).toUpperCase() 
+                    : 'LOW';
                 counts[r] = (counts[r] || 0) + 1;
                 if (r === 'CRITICAL' && !criticalLakeId) {
                     criticalLakeId = f.properties.id;
@@ -263,8 +265,8 @@
             const elSens = document.getElementById('kpi-sensors');
 
             if (elMon) elMon.innerText = totalLakes > 0 ? totalLakes.toLocaleString() : '2,843';
-            if (elCrit) elCrit.innerText = counts.CRITICAL || '3';
-            if (elHigh) elHigh.innerText = counts.HIGH || '11';
+            if (elCrit) elCrit.innerText = totalLakes > 0 ? counts.CRITICAL : '3';
+            if (elHigh) elHigh.innerText = totalLakes > 0 ? counts.HIGH : '11';
             if (elSens) elSens.innerText = totalSensors.toLocaleString();
 
             if (document.getElementById('risk-count-critical')) document.getElementById('risk-count-critical').innerText = counts.CRITICAL;
@@ -272,7 +274,7 @@
             if (document.getElementById('risk-count-moderate')) document.getElementById('risk-count-moderate').innerText = counts.MODERATE;
             if (document.getElementById('risk-count-low')) document.getElementById('risk-count-low').innerText = counts.LOW;
 
-            const pct = (val) => totalLakes > 0 ? Math.max(5, Math.round((val / totalLakes) * 100)) + '%' : '10%';
+            const pct = (val) => (totalLakes > 0 && val > 0) ? Math.max(5, Math.round((val / totalLakes) * 100)) + '%' : '0%';
             if (document.getElementById('risk-bar-critical')) document.getElementById('risk-bar-critical').style.width = pct(counts.CRITICAL);
             if (document.getElementById('risk-bar-high')) document.getElementById('risk-bar-high').style.width = pct(counts.HIGH);
             if (document.getElementById('risk-bar-moderate')) document.getElementById('risk-bar-moderate').style.width = pct(counts.MODERATE);
