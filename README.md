@@ -4,7 +4,6 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas%20%2F%20Local-47A248.svg?logo=mongodb)](https://www.mongodb.com/)
 [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-ML%20Engine-F7931E.svg?logo=scikit-learn)](https://scikit-learn.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-Active--Production-brightgreen.svg)]()
 
 > **GLOF Sentinel** is a state-of-the-art, real-time AI-powered early warning and disaster mitigation platform designed to monitor high-risk glacial lakes, predict Glacial Lake Outburst Floods (GLOF), simulate downstream hydrodynamic impacts, and dispatch automated multi-channel emergency alerts to vulnerable communities.
@@ -31,7 +30,6 @@
 - [Deployment Guide](#-deployment-guide)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
-- [License](#-license)
 
 ---
 
@@ -347,12 +345,6 @@ Contributions are welcome! If you'd like to improve GLOF Sentinel:
 3. Commit your changes (`git commit -m 'Add AmazingFeature'`).
 4. Push to the branch (`git push origin feature/AmazingFeature`).
 5. Open a Pull Request.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
