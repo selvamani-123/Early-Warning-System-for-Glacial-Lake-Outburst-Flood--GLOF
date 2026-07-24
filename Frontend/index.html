@@ -82,19 +82,19 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl pointer-events-auto">
                     <div class="glass-panel p-4 rounded-lg flex flex-col">
                         <span class="text-xs font-mono text-textSecondary uppercase">Monitored Lakes</span>
-                        <span class="text-2xl font-bold mt-1" id="kpi-monitored">2,843</span>
+                        <span class="text-2xl font-bold mt-1" id="kpi-monitored">--</span>
                     </div>
                     <div class="glass-panel p-4 rounded-lg flex flex-col border-b-2 border-riskCritical">
                         <span class="text-xs font-mono text-riskCritical uppercase">Critical Risk</span>
-                        <span class="text-2xl font-bold mt-1" id="kpi-critical">3</span>
+                        <span class="text-2xl font-bold mt-1" id="kpi-critical">--</span>
                     </div>
                     <div class="glass-panel p-4 rounded-lg flex flex-col border-b-2 border-riskHigh">
                         <span class="text-xs font-mono text-riskHigh uppercase">High Risk</span>
-                        <span class="text-2xl font-bold mt-1" id="kpi-high">11</span>
+                        <span class="text-2xl font-bold mt-1" id="kpi-high">--</span>
                     </div>
                     <div class="glass-panel p-4 rounded-lg flex flex-col">
                         <span class="text-xs font-mono text-accent uppercase">Active Sensors</span>
-                        <span class="text-2xl font-bold mt-1" id="kpi-sensors">14,209</span>
+                        <span class="text-2xl font-bold mt-1" id="kpi-sensors">--</span>
                     </div>
                 </div>
 
@@ -154,37 +154,37 @@
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="text-riskCritical">Critical</span>
-                                    <span class="font-mono" id="risk-count-critical">3</span>
+                                    <span class="font-mono" id="risk-count-critical">0</span>
                                 </div>
                                 <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-riskCritical h-full" id="risk-bar-critical" style="width: 2%"></div>
+                                    <div class="bg-riskCritical h-full" id="risk-bar-critical" style="width: 0%"></div>
                                 </div>
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="text-riskHigh">High</span>
-                                    <span class="font-mono" id="risk-count-high">11</span>
+                                    <span class="font-mono" id="risk-count-high">0</span>
                                 </div>
                                 <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-riskHigh h-full" id="risk-bar-high" style="width: 8%"></div>
+                                    <div class="bg-riskHigh h-full" id="risk-bar-high" style="width: 0%"></div>
                                 </div>
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="text-riskModerate">Moderate</span>
-                                    <span class="font-mono" id="risk-count-moderate">28</span>
+                                    <span class="font-mono" id="risk-count-moderate">0</span>
                                 </div>
                                 <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-riskModerate h-full" id="risk-bar-moderate" style="width: 15%"></div>
+                                    <div class="bg-riskModerate h-full" id="risk-bar-moderate" style="width: 0%"></div>
                                 </div>
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="text-riskLow">Low</span>
-                                    <span class="font-mono" id="risk-count-low">2,801</span>
+                                    <span class="font-mono" id="risk-count-low">0</span>
                                 </div>
                                 <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-riskLow h-full" id="risk-bar-low" style="width: 90%"></div>
+                                    <div class="bg-riskLow h-full" id="risk-bar-low" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
@@ -263,16 +263,16 @@
             });
 
             const totalLakes = features.length;
-            const totalSensors = totalLakes > 0 ? (totalLakes * 284 + 12) : 14209;
+            const totalSensors = totalLakes * 284 + 12;
 
             const elMon = document.getElementById('kpi-monitored');
             const elCrit = document.getElementById('kpi-critical');
             const elHigh = document.getElementById('kpi-high');
             const elSens = document.getElementById('kpi-sensors');
 
-            if (elMon) elMon.innerText = totalLakes > 0 ? totalLakes.toLocaleString() : '2,843';
-            if (elCrit) elCrit.innerText = totalLakes > 0 ? counts.CRITICAL : '3';
-            if (elHigh) elHigh.innerText = totalLakes > 0 ? counts.HIGH : '11';
+            if (elMon) elMon.innerText = totalLakes.toLocaleString();
+            if (elCrit) elCrit.innerText = counts.CRITICAL;
+            if (elHigh) elHigh.innerText = counts.HIGH;
             if (elSens) elSens.innerText = totalSensors.toLocaleString();
 
             if (document.getElementById('risk-count-critical')) document.getElementById('risk-count-critical').innerText = counts.CRITICAL;
