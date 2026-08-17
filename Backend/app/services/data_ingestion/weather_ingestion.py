@@ -90,5 +90,6 @@ class WeatherIngestionService:
                     "data_type": "OBSERVED"
                 }
             except Exception as e:
-                logger.error(f"Failed to fetch current weather: {e}")
+                import traceback
+                logger.error(f"Failed to fetch current weather: {e}\n{traceback.format_exc()}")
                 return None
