@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: glof-sentinel-api
+    env: python
+    rootDir: Backend
+    buildCommand: cd Backend && pip install -r requirements.txt || pip install -r requirements.txt
+    startCommand: cd Backend && uvicorn main:app --host 0.0.0.0 --port $PORT || uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false # Set to Vercel domain later, e.g. https://my-frontend.vercel.app
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.6
