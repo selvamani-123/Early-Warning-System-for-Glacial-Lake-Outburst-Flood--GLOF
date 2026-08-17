@@ -26,12 +26,10 @@
     <style>
         body { background-color: #050B14; color: #E2E8F0; letter-spacing: -0.01em; }
         .glass-panel {
-            background: rgba(10, 19, 34, 0.75);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #0A1322; /* Solid professional dark blue */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
         }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #050B14; }
@@ -97,32 +95,38 @@
                         <div id="charts-container" class="space-y-6">
                             
                             <!-- Rainfall Chart -->
-                            <div class="relative h-32 w-full">
+                            <div class="relative h-64 w-full">
                                 <canvas id="rainfallChart"></canvas>
                             </div>
                             
                             <!-- Temperature Chart -->
-                            <div class="relative h-32 w-full">
+                            <div class="relative h-64 w-full">
                                 <canvas id="tempChart"></canvas>
                             </div>
 
                             <!-- Streamflow Chart -->
-                            <div class="relative h-32 w-full">
+                            <div class="relative h-64 w-full">
                                 <canvas id="streamflowChart"></canvas>
                             </div>
 
                             <!-- Lake / Glacier Area Chart -->
-                            <div class="relative h-32 w-full">
+                            <div class="relative h-64 w-full" id="areaChartContainer">
                                 <canvas id="areaChart"></canvas>
+                                <div id="areaChartEmpty" class="absolute inset-0 flex items-center justify-center bg-bgMain/80 hidden rounded">
+                                    <span class="text-textSecondary text-sm font-medium tracking-wider"><span class="material-symbols-outlined text-sm align-middle mr-1">satellite_alt</span> SATELLITE DATA UNAVAILABLE</span>
+                                </div>
                             </div>
 
                             <!-- Environmental Stress Chart -->
-                            <div class="relative h-32 w-full">
+                            <div class="relative h-64 w-full" id="stressChartContainer">
                                 <canvas id="stressChart"></canvas>
+                                <div id="stressChartEmpty" class="absolute inset-0 flex items-center justify-center bg-bgMain/80 hidden rounded">
+                                    <span class="text-textSecondary text-sm font-medium tracking-wider">HISTORICAL BASELINE REQUIRED</span>
+                                </div>
                             </div>
 
                             <!-- AI Risk Chart (Conditionally shown) -->
-                            <div class="relative h-32 w-full hidden" id="riskChartContainer">
+                            <div class="relative h-64 w-full hidden" id="riskChartContainer">
                                 <canvas id="riskChart"></canvas>
                             </div>
                             
@@ -181,20 +185,24 @@
             responsive: true,
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
+            elements: {
+                line: { tension: 0, borderWidth: 2 }, // Official straight lines
+                point: { radius: 0, hitRadius: 10, hoverRadius: 4 } // Cleaner look
+            },
             plugins: { 
                 legend: { display: false },
-                tooltip: { backgroundColor: 'rgba(10, 19, 34, 0.9)', titleColor: '#fff', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 }
+                tooltip: { backgroundColor: '#0f172a', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1, padding: 10 }
             },
             scales: {
                 x: { 
                     display: !hideXLabels,
-                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
-                    ticks: { color: '#94A3B8', maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }
+                    grid: { color: 'rgba(255,255,255,0.08)', drawBorder: false },
+                    ticks: { color: '#94A3B8', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { family: 'Inter', size: 11 } }
                 },
                 y: {
-                    title: { display: true, text: yAxisTitle, color: '#94A3B8', font: { size: 10 } },
-                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
-                    ticks: { color: '#94A3B8', font: { size: 10 } },
+                    title: { display: true, text: yAxisTitle, color: '#e2e8f0', font: { family: 'Inter', size: 11, weight: '600' } },
+                    grid: { color: 'rgba(255,255,255,0.08)', drawBorder: false },
+                    ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } },
                     min: min,
                     max: max
                 }
@@ -330,7 +338,7 @@
                         borderColor: '#EF4444',
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0,
                         borderWidth: 2,
                         pointRadius: 0
                     }]
@@ -350,7 +358,7 @@
                         borderColor: '#06B6D4',
                         backgroundColor: 'rgba(6, 182, 212, 0.1)',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0,
                         borderWidth: 2,
                         pointRadius: 0
                     }]
@@ -360,6 +368,12 @@
 
             // Render Lake & Glacier Area
             const areaCtx = document.getElementById('areaChart').getContext('2d');
+            const hasArea = data.lake_area_history && data.lake_area_history.length > 0;
+            if(!hasArea) {
+                document.getElementById('areaChartEmpty').classList.remove('hidden');
+            } else {
+                document.getElementById('areaChartEmpty').classList.add('hidden');
+            }
             charts.area = new Chart(areaCtx, {
                 type: 'line',
                 data: {
@@ -368,24 +382,24 @@
                         {
                             label: 'Lake Area (km²)',
                             data: labels.map(l => {
-                                const match = data.lake_area_history.find(r => r.date.startsWith(l));
+                                const match = (data.lake_area_history || []).find(r => r.date.startsWith(l));
                                 return match ? match.value : null;
                             }),
                             borderColor: '#8B5CF6',
                             borderWidth: 2,
-                            tension: 0.4,
+                            tension: 0,
                             pointRadius: 0
                         },
                         {
                             label: 'Glacier Area (km²)',
                             data: labels.map(l => {
-                                const match = data.glacier_area_history.find(r => r.date.startsWith(l));
+                                const match = (data.glacier_area_history || []).find(r => r.date.startsWith(l));
                                 return match ? match.value : null;
                             }),
                             borderColor: '#cbd5e1',
                             borderDash: [5, 5],
                             borderWidth: 2,
-                            tension: 0.4,
+                            tension: 0,
                             pointRadius: 0
                         }
                     ]
@@ -395,6 +409,12 @@
 
             // Render Environmental Stress
             const stressCtx = document.getElementById('stressChart').getContext('2d');
+            const hasStress = data.environmental_stress && data.environmental_stress.length > 0;
+            if(!hasStress) {
+                document.getElementById('stressChartEmpty').classList.remove('hidden');
+            } else {
+                document.getElementById('stressChartEmpty').classList.add('hidden');
+            }
             charts.stress = new Chart(stressCtx, {
                 type: 'line',
                 data: {
@@ -402,13 +422,13 @@
                     datasets: [{
                         label: 'Env Stress Score',
                         data: labels.map(l => {
-                            const match = data.environmental_stress.find(r => r.date.startsWith(l));
+                            const match = (data.environmental_stress || []).find(r => r.date.startsWith(l));
                             return match ? match.value : null;
                         }),
                         borderColor: '#F59E0B',
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0,
                         borderWidth: 2,
                         pointRadius: 0
                     }]

@@ -26,12 +26,10 @@
     <style>
         body { background-color: #050B14; color: #E2E8F0; letter-spacing: -0.01em; }
         .glass-panel {
-            background: rgba(10, 19, 34, 0.75);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #0A1322; /* Solid professional dark blue */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
         }
         .glass-panel:hover {
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -135,18 +133,23 @@
                         
                         // Initialize Regional Chart
                         const rCtx = document.getElementById('regionalChart').getContext('2d');
+                        const gradCritical = rCtx.createLinearGradient(0, 0, 0, 300); gradCritical.addColorStop(0, 'rgba(239, 68, 68, 1)'); gradCritical.addColorStop(1, 'rgba(239, 68, 68, 0.4)');
+                        const gradHigh = rCtx.createLinearGradient(0, 0, 0, 300); gradHigh.addColorStop(0, 'rgba(249, 115, 22, 1)'); gradHigh.addColorStop(1, 'rgba(249, 115, 22, 0.4)');
+                        const gradMod = rCtx.createLinearGradient(0, 0, 0, 300); gradMod.addColorStop(0, 'rgba(245, 158, 11, 1)'); gradMod.addColorStop(1, 'rgba(245, 158, 11, 0.4)');
+                        const gradLow = rCtx.createLinearGradient(0, 0, 0, 300); gradLow.addColorStop(0, 'rgba(16, 185, 129, 1)'); gradLow.addColorStop(1, 'rgba(16, 185, 129, 0.4)');
+
                         regChart = new Chart(rCtx, {
                             type: 'bar',
                             data: {
                                 labels: regions,
                                 datasets: [
-                                    { label: 'Critical', data: criticals, backgroundColor: '#EF4444' },
-                                    { label: 'High', data: highs, backgroundColor: '#F97316' },
-                                    { label: 'Moderate', data: moderates, backgroundColor: '#F59E0B' },
-                                    { label: 'Low', data: lows, backgroundColor: '#10B981' }
+                                    { label: 'Critical', data: criticals, backgroundColor: gradCritical, borderSkipped: false, borderWidth: 1, borderColor: '#EF4444' },
+                                    { label: 'High', data: highs, backgroundColor: gradHigh, borderSkipped: false, borderWidth: 1, borderColor: '#F97316' },
+                                    { label: 'Moderate', data: moderates, backgroundColor: gradMod, borderSkipped: false, borderWidth: 1, borderColor: '#F59E0B' },
+                                    { label: 'Low', data: lows, backgroundColor: gradLow, borderSkipped: false, borderWidth: 1, borderColor: '#10B981' }
                                 ]
                             },
-                            options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#94A3B8'} }, y: { stacked: true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#94A3B8'} } }, plugins: { legend: { labels: {color: '#E2E8F0'} } } }
+                            options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid:{color:'rgba(255,255,255,0.08)'}, ticks:{color:'#94A3B8'} }, y: { stacked: true, grid:{color:'rgba(255,255,255,0.08)'}, ticks:{color:'#94A3B8'} } }, plugins: { legend: { labels: {color: '#E2E8F0'} }, tooltip: { backgroundColor: '#0f172a', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1 } } }
                         });
                     }
                     
@@ -163,10 +166,11 @@
                                 datasets: [{
                                     data: drvVals,
                                     backgroundColor: ['#3B82F6', '#EF4444', '#F97316', '#F59E0B', '#10B981'],
-                                    borderWidth: 0
+                                    borderWidth: 3,
+                                    borderColor: '#0A1322'
                                 }]
                             },
-                            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: {color: '#E2E8F0'} } } }
+                            options: { responsive: true, maintainAspectRatio: false, cutout: '78%', plugins: { legend: { position: 'right', labels: {color: '#E2E8F0', padding: 20, font: {family: 'Inter', size: 12}} }, tooltip: { backgroundColor: '#0f172a', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1 } } }
                         });
                     }
                 }

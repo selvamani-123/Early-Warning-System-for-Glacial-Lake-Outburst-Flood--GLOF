@@ -24,7 +24,7 @@ async def get_lake(lake_id: str):
     history_cursor = db["historical_events"].find({"lake_id": lake_id}, {"_id": 0})
     historical_events = await history_cursor.to_list(length=100)
     
-    weather = await db["weather_history"].find_one({"lake_id": lake_id}, {"_id": 0})
+    weather = await db["weather_cache"].find_one({"lake_id": lake_id}, {"_id": 0})
     
     return {
         "lake": lake,
@@ -33,5 +33,5 @@ async def get_lake(lake_id: str):
         "connected_river": river,
         "downstream_settlements": settlements,
         "historical_events": historical_events,
-        "weather_history": weather
+        "weather_cache": weather
     }

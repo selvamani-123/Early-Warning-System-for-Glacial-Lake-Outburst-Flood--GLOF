@@ -28,7 +28,8 @@ async def get_historical_analysis(lake_id: str = Query(None, description="Filter
         
     tasks = [
         db["historical_events"].find({"lake_id": lake_id}, {"_id": 0}).sort("event_date", -1).to_list(100),
-        db["risk_assessments"].find({"lake_id": lake_id, "timestamp": {"$gte": cutoff_date}}, {"_id": 0}).sort("timestamp", 1).to_list(10000)
+        db["daily_weather_history"].find({"lake_id": lake_id, "date": {"$gte": cutoff_date_str}}, {"_id": 0}).sort("date", 1).to_list(10000),
+        db["risk_assessments"].find({"lake_id": lake_id, "timestamp": {"$gte": cutoff_date}}, {"_id": 0}).sort("timestamp", 1).to_list(100)
     ]
     
     if river_id:
@@ -38,37 +39,38 @@ async def get_historical_analysis(lake_id: str = Query(None, description="Filter
     
     results = await asyncio.gather(*tasks)
     events = results[0] or []
-    assessments = results[1] or []
-    streamflow = results[2] or []
+    weather_history = results[1] or []
+    assessments = results[2] or []
+    streamflow = results[3] or []
     
-    # Process Risk Assessments to extract weather, area, risk, and stress
+    # Process Weather History to extract rainfall, temp, area
     rainfall_history = []
     temperature_history = []
     lake_area_history = []
     glacier_area_history = []
-    recent_ai_assessments = []
     environmental_stress = []
     
+    for w in weather_history:
+        date_str = w.get("date")
+        rain = w.get("rainfall", 0)
+        temp = w.get("temperature", 0)
+        l_area = w.get("lake_area")
+        g_area = w.get("glacier_area")
+        
+        # Proper Environmental Stress requires full feature engineering. 
+        # For history, we will rely on ML models if stored, otherwise skip fake data.
+        
+        rainfall_history.append({"date": date_str, "value": rain})
+        temperature_history.append({"date": date_str, "value": temp})
+        if l_area is not None:
+            lake_area_history.append({"date": date_str, "value": l_area})
+        if g_area is not None:
+            glacier_area_history.append({"date": date_str, "value": g_area})
+        
+    recent_ai_assessments = []
     for a in assessments:
-        ts = a.get("timestamp")
-        features = a.get("engineered_features", {})
-        
-        rain = features.get("rainfall", 0)
-        temp = features.get("temperature", 0)
-        l_area = features.get("lake_area", 0)
-        g_area = features.get("glacier_area", 0)
-        
-        # Environmental stress derived from temp anomaly and rainfall intensity
-        stress = min(100, max(0, (features.get("temp_anomaly", 0) * 2) + (features.get("rainfall_intensity", 0) * 10) + (features.get("water_accumulation_score", 0))))
-        
-        rainfall_history.append({"date": ts, "value": rain})
-        temperature_history.append({"date": ts, "value": temp})
-        lake_area_history.append({"date": ts, "value": l_area})
-        glacier_area_history.append({"date": ts, "value": g_area})
-        environmental_stress.append({"date": ts, "value": stress})
-        
         recent_ai_assessments.append({
-            "timestamp": ts,
+            "timestamp": a.get("timestamp"),
             "risk_level": a.get("risk_level"),
             "explanation": a.get("explanation"),
             "probabilities": a.get("probabilities")

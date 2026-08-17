@@ -1,14 +1,16 @@
-import httpx
-from datetime import datetime, timezone
+import asyncio
 import logging
+from datetime import datetime, timezone
 from app.core.database import get_db
+from app.services.data_ingestion.weather_ingestion import WeatherIngestionService
+from app.services.data_ingestion.validator import DataValidator
 
 logger = logging.getLogger(__name__)
 
 async def fetch_and_cache_weather():
     """
-    Runs every 15 minutes.
-    Fetches weather data from Open-Meteo for monitored locations and caches in MongoDB.
+    Fetches real-time current weather data for all lakes from Open-Meteo
+    and updates the current weather_cache in MongoDB.
     """
     logger.info("Starting background job: fetch_and_cache_weather")
     db = get_db()
@@ -16,33 +18,67 @@ async def fetch_and_cache_weather():
         logger.error("Database connection not ready.")
         return
 
-    # In a real implementation, we would fetch coordinates from the `lake_cache` or a monitored locations list.
-    # For now, we use a default coordinate (e.g., South Lhonak Lake: 27.75, 88.25)
-    target_locations = [{"name": "South Lhonak Lake", "lat": 27.75, "lon": 88.25}]
-
-    async with httpx.AsyncClient() as client:
-        for loc in target_locations:
-            url = f"https://api.open-meteo.com/v1/forecast?latitude={loc['lat']}&longitude={loc['lon']}&current=temperature_2m,relative_humidity_2m,precipitation,snowfall,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=temperature_2m_min,precipitation_sum&timezone=auto"
-            try:
-                response = await client.get(url, timeout=10.0)
-                response.raise_for_status()
-                data = response.json()
-                
+    # Dynamically fetch all lakes from DB
+    lakes = await db["lakes"].find({}, {"id": 1, "name": 1, "latitude": 1, "longitude": 1}).to_list(length=1000)
+    
+    weather_service = WeatherIngestionService()
+    
+    for lake in lakes:
+        lat = lake.get("latitude")
+        lon = lake.get("longitude")
+        lake_id = lake.get("id")
+        lake_name = lake.get("name")
+        
+        if not DataValidator.is_valid_location(lat, lon):
+            continue
+            
+        try:
+            current_obs = await weather_service.fetch_current_weather(lat, lon)
+            
+            if current_obs and DataValidator.validate_weather(current_obs.get("temperature_c"), current_obs.get("rainfall_mm")):
+                # Ensure the cache uses the exact schema mandated
                 cache_doc = {
-                    "location_name": loc["name"],
-                    "latitude": loc["lat"],
-                    "longitude": loc["lon"],
-                    "timestamp": datetime.now(timezone.utc),
-                    "current": data.get("current", {}),
-                    "daily": data.get("daily", {}),
-                    "source": "Open-Meteo"
+                    "lake_id": lake_id,
+                    "location_name": lake_name,
+                    "latitude": lat,
+                    "longitude": lon,
+                    "timestamp": current_obs["timestamp"],
+                    "temperature_c": current_obs["temperature_c"],
+                    "min_temperature_c": current_obs.get("min_temperature_c"),
+                    "rainfall_mm": current_obs["rainfall_mm"],
+                    "precip_24h_mm": current_obs.get("precip_24h_mm"),
+                    "humidity_percent": current_obs.get("humidity_percent"),
+                    "snowfall_mm": current_obs.get("snowfall_mm", 0.0),
+                    "wind_speed": current_obs.get("wind_speed"),
+                    "wind_direction": current_obs.get("wind_direction"),
+                    "wind_gusts": current_obs.get("wind_gusts"),
+                    "source": current_obs["source"],
+                    "data_type": current_obs["data_type"],
+                    "last_updated": datetime.now(timezone.utc)
                 }
 
                 await db.weather_cache.update_one(
-                    {"location_name": loc["name"]},
+                    {"lake_id": lake_id},
                     {"$set": cache_doc},
                     upsert=True
                 )
-                logger.info(f"Successfully updated weather cache for {loc['name']}")
-            except Exception as e:
-                logger.error(f"Failed to fetch weather for {loc['name']}: {e}")
+                logger.info(f"Successfully updated weather cache for {lake_name}")
+            else:
+                logger.warning(f"Invalid weather observation for {lake_name}")
+        except Exception as e:
+            logger.error(f"Failed to fetch weather for {lake_name}: {e}")
+
+if __name__ == "__main__":
+    from motor.motor_asyncio import AsyncIOMotorClient
+    import os
+    from dotenv import load_dotenv
+    
+    load_dotenv()
+    
+    def mock_get_db():
+        return AsyncIOMotorClient(os.getenv('MONGODB_URI'))['glof_sentinel']
+        
+    import app.core.database
+    app.core.database.get_db = mock_get_db
+    
+    asyncio.run(fetch_and_cache_weather())

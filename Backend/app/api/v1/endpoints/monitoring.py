@@ -29,27 +29,28 @@ async def websocket_endpoint(websocket: WebSocket, lake_id: str = None):
             current_weather = None
             if lake_name:
                 weather_cache = await db["weather_cache"].find_one({"location_name": lake_name})
-                if weather_cache and "current" in weather_cache:
-                    c = weather_cache["current"]
-                    d = weather_cache.get("daily", {})
+                if weather_cache:
+                    temp_val = weather_cache.get("temperature_c", 0)
+                    min_t = weather_cache.get("min_temperature_c")
+                    if min_t is None: min_t = temp_val - 5
                     
-                    temp_val = c.get("temperature_2m", 0)
-                    hum_val = c.get("relative_humidity_2m", 50)
+                    hum_val = weather_cache.get("humidity_percent", 50)
                     
+                    # Calculate Dew Point
                     import math
                     a = 17.27
                     b = 237.7
                     alpha = ((a * temp_val) / (b + temp_val)) + math.log(max(1, hum_val)/100.0)
                     dew_point = (b * alpha) / (a - alpha) if (a - alpha) != 0 else 0
                     
+                    # Process Wind Direction
                     dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
-                    wind_dir_deg = c.get("wind_direction_10m", 0)
+                    wind_dir_deg = weather_cache.get("wind_direction", 0)
                     ix = int((wind_dir_deg + 11.25)/22.5)
                     wind_dir_str = dirs[ix % 16]
                     
-                    min_t = d.get("temperature_2m_min", [temp_val - 5])[0]
-                    precip_sum = d.get("precipitation_sum", [0])[0]
-                    curr_precip = c.get("precipitation") or c.get("rainfall", 0)
+                    curr_precip = weather_cache.get("rainfall_mm", 0)
+                    precip_24h = weather_cache.get("precip_24h_mm", curr_precip)
                     
                     intensity = "None"
                     if curr_precip > 5: intensity = "High Intensity"
@@ -58,33 +59,31 @@ async def websocket_endpoint(websocket: WebSocket, lake_id: str = None):
                     current_weather = {
                         "temperature": temp_val,
                         "min_temp": min_t,
-                        "temp_trend": round((temp_val - min_t) / 12.0, 1), # mock trend based on diff
+                        "temp_trend": round((temp_val - min_t) / 12.0, 1) if min_t else 0,
                         "rainfall": curr_precip,
-                        "precip_24h": precip_sum,
+                        "precip_24h": precip_24h,
                         "precip_intensity": intensity,
                         "humidity": hum_val,
                         "dew_point": round(dew_point, 1),
-                        "wind": c.get("wind_speed_10m", 0),
-                        "gust": c.get("wind_gusts_10m", c.get("wind_speed_10m", 0) * 1.5),
+                        "wind": weather_cache.get("wind_speed", 0),
+                        "gust": weather_cache.get("wind_gusts", weather_cache.get("wind_speed", 0) * 1.5),
                         "wind_dir": wind_dir_str
                     }
                     
             if not current_weather:
-                # Fallback to weather_history
-                wh = await db["weather_history"].find_one({"lake_id": lake_id}) or {}
-                temp_val = wh.get("avg_summer_temp_c", 0.0)
+                # If absolute failure, return placeholders so the UI doesn't crash, but explicitly label them
                 current_weather = {
-                    "temperature": temp_val,
-                    "min_temp": round(temp_val - 4.5, 1),
-                    "temp_trend": 0.2,
-                    "rainfall": wh.get("annual_precip_mm", 0.0) / 365.0,
-                    "precip_24h": wh.get("annual_precip_mm", 0.0) / 365.0,
-                    "precip_intensity": "Stable",
-                    "humidity": 50.0,
-                    "dew_point": round(temp_val - 2.0, 1),
-                    "wind": 10.0,
-                    "gust": 15.0,
-                    "wind_dir": "SW"
+                    "temperature": 0.0,
+                    "min_temp": 0.0,
+                    "temp_trend": 0.0,
+                    "rainfall": 0.0,
+                    "precip_24h": 0.0,
+                    "precip_intensity": "DATA UNAVAILABLE",
+                    "humidity": 0.0,
+                    "dew_point": 0.0,
+                    "wind": 0.0,
+                    "gust": 0.0,
+                    "wind_dir": "N/A"
                 }
                 
             # Fetch the most recent risk assessment
