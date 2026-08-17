@@ -1,0 +1,85 @@
+{
+  "relationships": [
+    {
+      "lake_id": "G088020E27910N",
+      "lake_name": "South Lhonak Lake",
+      "river_id": "RIV-TEESTA",
+      "river_name": "Teesta River",
+      "basin": "Brahmaputra",
+      "impact_areas": [
+        "Chungthang",
+        "Dikchu",
+        "Singtam",
+        "Rangpo"
+      ],
+      "distance_to_first_settlement_km": 60,
+      "estimated_travel_time_hrs": 1.5
+    },
+    {
+      "lake_id": "G086925E27896N",
+      "lake_name": "Imja Tsho",
+      "river_id": "RIV-DUDHKOSI",
+      "river_name": "Dudh Kosi",
+      "basin": "Ganges",
+      "impact_areas": [
+        "Dingboche",
+        "Chhukung",
+        "Pangboche"
+      ],
+      "distance_to_first_settlement_km": 10,
+      "estimated_travel_time_hrs": 0.5
+    },
+    {
+      "lake_id": "G-PALCA",
+      "lake_name": "Lake Palcacocha",
+      "river_id": "RIV-PARIA",
+      "river_name": "Paria River",
+      "basin": "Santa",
+      "impact_areas": [
+        "Huaraz",
+        "Monterrey"
+      ],
+      "distance_to_first_settlement_km": 23,
+      "estimated_travel_time_hrs": 0.8
+    },
+    {
+      "lake_id": "G-FAVERG",
+      "lake_name": "Lake Faverges",
+      "river_id": "RIV-TIECHE",
+      "river_name": "Tièche River",
+      "basin": "Rhone",
+      "impact_areas": [
+        "Aminona",
+        "Sierre"
+      ],
+      "distance_to_first_settlement_km": 12,
+      "estimated_travel_time_hrs": 0.4
+    },
+    {
+      "lake_id": "G-SHISP",
+      "lake_name": "Shisper Lake",
+      "river_id": "RIV-HASSANABAD",
+      "river_name": "Hassanabad Nallah",
+      "basin": "Indus",
+      "impact_areas": [
+        "Hassanabad Village",
+        "Aliabad"
+      ],
+      "distance_to_first_settlement_km": 8,
+      "estimated_travel_time_hrs": 0.3
+    },
+    {
+      "lake_id": "G-THORT",
+      "lake_name": "Thorthormi Lake",
+      "river_id": "RIV-PHOCHHU",
+      "river_name": "Pho Chhu",
+      "basin": "Brahmaputra",
+      "impact_areas": [
+        "Punakha Dzong",
+        "Khuruthang"
+      ],
+      "distance_to_first_settlement_km": 70,
+      "estimated_travel_time_hrs": 2.5
+    }
+  ]
+}
